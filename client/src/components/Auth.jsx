@@ -99,7 +99,7 @@ const Auth = ({ setIsLoggedIn }) => {
     setMessage("Sending recovery email...");
     try {
       const res = await fetch(
-        "http://localhost:5005/api/auth/forgot-password",
+        `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -121,8 +121,8 @@ const Auth = ({ setIsLoggedIn }) => {
     setMessage("");
 
     const url = isLogin
-      ? "http://localhost:5005/api/auth/login"
-      : "http://localhost:5005/api/auth/register";
+      ? `${import.meta.env.VITE_API_URL}/api/auth/login`
+      : `${import.meta.env.VITE_API_URL}/api/auth/register`;
 
     try {
       const body = isLogin

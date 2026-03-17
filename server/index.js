@@ -3,19 +3,18 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-// --- TEST LINES (We will delete these later) ---
-console.log("My Email is:", process.env.EMAIL_USER);
-console.log("My Password is:", process.env.EMAIL_PASS ? "Loaded!" : "MISSING!");
-// ----------------------------------------------
-
-// 1. Import your custom routes
 const authRoutes = require("./routes/auth");
 const reservationRoutes = require("./routes/reservations");
 
 const app = express();
 
 // --- MIDDLEWARE ---
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://l-olive-restaurant.vercel.app", "http://localhost:5173"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // --- ROUTES ---
@@ -34,15 +33,13 @@ app.use("/api/reservations", reservationRoutes);
 // --- DATABASE CONNECTION ---
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("🍃 Connected to L'Olive Database on MongoDB Atlas");
-  })
-  .catch((err) => {
-    console.error("❌ Database connection error:", err.message);
-  });
+  .then(() => console.log("🍃 Connected to L'Olive Database"))
+  .catch((err) => console.error("❌ DB Error:", err.message));
 
-// --- SERVER LISTENER ---
 const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => {
-  console.log(`🚀 Server is breathing on http://localhost:${PORT}`);
+  console.log(`🚀 Server on port ${PORT}`);
 });
+
+// 🎯 CRITICAL FOR VERCEL
+module.exports = app;

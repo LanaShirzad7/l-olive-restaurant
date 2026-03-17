@@ -49,20 +49,23 @@ const Reservation = () => {
     const user = JSON.parse(storedUser);
 
     try {
-      const response = await fetch("http://localhost:5005/api/reservations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id || user._id,
-          userEmail: user.email,
-          userName: user.name,
-          date: formData.date,
-          time: formData.time,
-          guests: Number(formData.adults) + Number(formData.children),
-          area: formData.area,
-          specialRequest: formData.specialRequest,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/reservations`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id || user._id,
+            userEmail: user.email,
+            userName: user.name,
+            date: formData.date,
+            time: formData.time,
+            guests: Number(formData.adults) + Number(formData.children),
+            area: formData.area,
+            specialRequest: formData.specialRequest,
+          }),
+        },
+      );
 
       if (response.ok) {
         const existingNotes = JSON.parse(
