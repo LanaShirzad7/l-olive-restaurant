@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f7f7e1;
+  --color-sand: #e8e6d9;
+  --color-earth-soft: #7a8a5f; /* 🎯 Added: Lighter than light */
+  --color-earth-light: #8f9e71;
+  --color-earth-medium: #6b8e23;
+  --color-earth-dark: #556b2f;
+  --color-earth-muted: #4a5438;
+
+  /* This sets your serif font to Times New Roman */
+  --font-serif: "Times New Roman", Times, serif;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- 🎯 ADMIN MANIFEST PRINT STYLES --- */
+@media print {
+  body {
+    background-color: white !important;
+    /* Forces the browser to print your specific background colors/borders if needed */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color: black !important;
+  }
+
+  /* Automatically hides your Navbar and Footer so they don't waste ink */
+  nav,
+  footer {
+    display: none !important;
+  }
+
+  /* Removes margins/padding around the whole page to fit more guests on one sheet */
+  @page {
+    margin: 1cm;
+  }
+
+  /* 🎯 Prevents table rows from being cut in half across pages */
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+}
