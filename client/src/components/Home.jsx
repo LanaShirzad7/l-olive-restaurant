@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
-// 🎯 Import the translation hook
 import { useTranslation } from "react-i18next";
 
 const Home = () => {
-  // 🎯 Initialize the hook
   const { t } = useTranslation();
 
   return (
@@ -11,14 +9,18 @@ const Home = () => {
       {/* 1. Hero Section */}
       <header className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
+          {/* 🎯 FIXED VIDEO TAG FOR MOBILE */}
           <video
+            src="/IMG_2902.mp4"
             autoPlay
             loop
             muted
             playsInline
+            disablePictureInPicture
+            controlsList="nodownload"
             className="w-full h-full object-cover"
           >
-            <source src="/IMG_2902.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-black/30"></div>
         </div>
