@@ -285,8 +285,7 @@ const classicItems = [
     name: "VIP Flaming Cheeseburger",
     price: 38,
     calories: 940,
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800",
+    image: "/burger.jpg",
     desc: "A towering masterpiece featuring A5 Wagyu beef, habaneros, and aged cheddar.",
     customizableIngredients: [
       "Red Onion",
@@ -380,11 +379,11 @@ const Menu = () => {
   };
 
   const renderCategory = (categoryTitle, categoryKey) => (
-    <div className="mb-24">
-      <h2 className="text-4xl text-earth-dark italic mb-10 border-b border-sand pb-4 uppercase tracking-widest">
+    <div className="mb-24" key={categoryKey}>
+      <h2 className="text-3xl md:text-4xl text-earth-dark italic mb-10 border-b border-sand pb-4 uppercase tracking-widest">
         {t(categoryKey)}
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
         {currentItems
           .filter((item) => item.category === categoryKey)
           .map((item) => (
@@ -399,25 +398,25 @@ const Menu = () => {
                 setSpecialRequest("");
               }}
             >
-              <div className="h-40 overflow-hidden relative">
+              <div className="h-32 md:h-40 overflow-hidden relative">
                 <img
                   src={item.image}
                   alt={t(item.tKey)}
                   className="w-full h-full object-cover group-hover:scale-105 transition-all"
                 />
               </div>
-              <div className="p-4 flex-grow flex flex-col">
-                <h3 className="text-lg text-earth-dark hover:italic mb-1 leading-tight">
+              <div className="p-3 md:p-4 flex-grow flex flex-col">
+                <h3 className="text-sm md:text-lg text-earth-dark hover:italic mb-1 leading-tight">
                   {t(item.tKey)}
                 </h3>
-                <p className="text-[10px] text-gray-500 italic mb-3 flex-grow line-clamp-2">
+                <p className="text-[9px] md:text-[10px] text-gray-500 italic mb-3 flex-grow line-clamp-2">
                   {t(`${item.tKey}_desc`)}
                 </p>
                 <div className="flex justify-between items-center mt-auto">
-                  <span className="font-sans font-bold text-earth-medium text-sm">
+                  <span className="font-sans font-bold text-earth-medium text-xs md:text-sm">
                     ${item.price}
                   </span>
-                  <span className="text-[8px] uppercase font-bold text-earth-dark underline">
+                  <span className="text-[7px] md:text-[8px] uppercase font-bold text-earth-dark underline">
                     {t("customize")}
                   </span>
                 </div>
@@ -430,7 +429,7 @@ const Menu = () => {
 
   return (
     <div
-      className="min-h-screen pt-40 pb-20 px-6 font-serif"
+      className="min-h-screen pt-32 md:pt-40 pb-20 px-4 md:px-6 font-serif"
       style={{
         background: `radial-gradient(circle at top, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0) 50%), 
                      linear-gradient(to bottom, #3D4828, #FDFCF0)`,
@@ -438,30 +437,30 @@ const Menu = () => {
     >
       <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-6xl md:text-8xl text-cream italic drop-shadow-lg">
+          <h1 className="text-5xl md:text-8xl text-cream italic drop-shadow-lg">
             {t("menu_title")}
           </h1>
-          <p className="text-sand uppercase tracking-[0.3em] text-[10px] mt-4 mb-10 text-center">
+          <p className="text-sand uppercase tracking-[0.3em] text-[9px] md:text-[10px] mt-4 mb-10 text-center">
             {t("pure_organic")}
           </p>
 
-          <div className="flex justify-center items-center gap-8 mb-16">
+          <div className="flex justify-center items-center gap-4 md:gap-8 mb-16">
             <span
-              className={`text-xs uppercase font-bold tracking-widest transition-all duration-500 ${!isVegan ? "text-cream scale-110 opacity-100" : "text-cream/40 opacity-60 scale-100"}`}
+              className={`text-[10px] md:text-xs uppercase font-bold tracking-widest transition-all duration-500 ${!isVegan ? "text-cream scale-110 opacity-100" : "text-cream/50 opacity-60 scale-100"}`}
             >
               {t("classic_menu")}
             </span>
             <button
               onClick={() => setIsVegan(!isVegan)}
-              className="w-16 h-8 rounded-full bg-sand relative flex items-center px-1 cursor-pointer transition-colors"
+              className="w-14 h-7 md:w-16 md:h-8 rounded-full bg-sand relative flex items-center px-1 cursor-pointer transition-colors"
               style={{ backgroundColor: isVegan ? "#8F9E71" : "#D4D3AC" }}
             >
               <div
-                className={`w-6 h-6 rounded-full bg-white shadow-md transition-all transform ${isVegan ? "translate-x-8" : "translate-x-0"}`}
+                className={`w-5 h-5 md:w-6 md:h-6 rounded-full bg-white shadow-md transition-all transform ${isVegan ? "translate-x-7 md:translate-x-8" : "translate-x-0"}`}
               ></div>
             </button>
             <span
-              className={`text-xs uppercase font-bold tracking-widest transition-all duration-500 ${isVegan ? "text-cream scale-110 opacity-100" : "text-cream/40 opacity-60 scale-100"}`}
+              className={`text-[10px] md:text-xs uppercase font-bold tracking-widest transition-all duration-500 ${isVegan ? "text-cream scale-110 opacity-100" : "text-cream/50 opacity-60 scale-100"}`}
             >
               {t("green_menu")}
             </span>
@@ -473,45 +472,41 @@ const Menu = () => {
         {renderCategory(t("Beverage"), "Beverage")}
 
         {selectedItem && (
-          <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 md:p-4">
             <div
-              className="absolute inset-0 bg-[#3D4828]/20 backdrop-blur-sm"
+              className="absolute inset-0 bg-[#3D4828]/40 backdrop-blur-md"
               onClick={() => setSelectedItem(null)}
             ></div>
-            <div className="relative bg-[#FDFCF0] w-full max-w-6xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col md:flex-row z-[1000] rounded-sm">
-              <div className="md:w-1/2 bg-sand/10 relative flex items-center justify-center p-12 min-h-[400px] border-r border-sand/30">
-                <div className="absolute inset-0 z-0">
-                  <img
-                    src={
-                      selectedItem.id === 999
-                        ? "/burger.jpg"
-                        : selectedItem.image
-                    }
-                    alt="Product"
-                    className="w-full h-full object-cover opacity-95 transition-all duration-700"
-                  />
-                </div>
+            <div className="relative bg-[#FDFCF0] w-full max-w-6xl h-[90vh] md:h-auto md:max-h-[95vh] overflow-hidden shadow-2xl flex flex-col md:flex-row z-[1000] rounded-sm">
+              <div className="h-48 md:h-auto md:w-1/2 bg-sand/10 relative border-b md:border-b-0 md:border-r border-sand/30 overflow-hidden">
+                <img
+                  src={
+                    selectedItem.id === 999 ? "/burger.jpg" : selectedItem.image
+                  }
+                  alt="Product"
+                  className="w-full h-full object-cover opacity-95"
+                />
               </div>
 
-              <div className="md:w-1/2 p-8 md:p-12 overflow-y-auto bg-cream/50 backdrop-blur-md flex flex-col">
+              <div className="flex-1 p-6 md:p-12 overflow-y-auto bg-cream/50 backdrop-blur-md flex flex-col">
                 <button
                   onClick={() => setSelectedItem(null)}
-                  className="absolute top-6 right-8 text-3xl font-light text-earth-dark"
+                  className="absolute top-4 right-6 text-3xl font-light text-earth-dark z-10"
                 >
                   ×
                 </button>
-                <h2 className="text-4xl italic text-earth-dark uppercase font-bold leading-tight">
+                <h2 className="text-2xl md:text-4xl italic text-earth-dark uppercase font-bold leading-tight">
                   {t(selectedItem.tKey)}
                 </h2>
-                <p className="text-xs font-bold text-earth-medium mt-2 mb-8">
+                <p className="text-[10px] md:text-xs font-bold text-earth-medium mt-1 mb-6">
                   {selectedItem.calories} kcal • ${selectedItem.price}
                 </p>
 
-                <div className="flex-grow space-y-10">
+                <div className="space-y-8 pb-4">
                   {selectedItem.id === 999 ? (
                     <>
                       <div>
-                        <h4 className="text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest">
+                        <h4 className="text-[9px] md:text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest text-earth-dark">
                           {t("remove_ingredients")}
                         </h4>
                         <div className="grid grid-cols-2 gap-2">
@@ -521,7 +516,7 @@ const Menu = () => {
                               onClick={() =>
                                 handleToggle(removed, setRemoved, ing)
                               }
-                              className={`p-3 border text-[10px] uppercase flex justify-between transition-all cursor-pointer ${removed.includes(ing) ? "text-red-400 border-red-100 bg-red-50/10" : "border-sand hover:border-earth-dark bg-transparent"}`}
+                              className={`p-2 md:p-3 border text-[9px] md:text-[10px] uppercase flex justify-between transition-all cursor-pointer ${removed.includes(ing) ? "text-red-400 border-red-100 bg-red-50/10" : "text-earth-dark border-sand bg-transparent"}`}
                             >
                               {t(`ingredients_list.${ing}`)}{" "}
                               <span>{removed.includes(ing) ? "+" : "×"}</span>
@@ -531,7 +526,7 @@ const Menu = () => {
                       </div>
 
                       <div>
-                        <h4 className="text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest">
+                        <h4 className="text-[9px] md:text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest text-earth-dark">
                           {t("add_supplements")}
                         </h4>
                         <div className="grid grid-cols-2 gap-2">
@@ -541,7 +536,7 @@ const Menu = () => {
                               onClick={() =>
                                 handleToggle(addedSupps, setAddedSupps, supp)
                               }
-                              className={`p-3 border text-[10px] uppercase transition-all cursor-pointer ${addedSupps.includes(supp) ? "bg-earth-dark text-white border-earth-dark" : "border-sand hover:border-earth-dark bg-transparent"}`}
+                              className={`p-2 md:p-3 border text-[9px] md:text-[10px] uppercase transition-all cursor-pointer ${addedSupps.includes(supp) ? "bg-earth-dark text-white border-earth-dark" : "text-earth-dark border-sand bg-transparent"}`}
                             >
                               ➕ {t(`ingredients_list.${supp}`)}
                             </button>
@@ -550,15 +545,15 @@ const Menu = () => {
                       </div>
 
                       <div>
-                        <h4 className="text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest">
+                        <h4 className="text-[9px] md:text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest text-earth-dark">
                           {t("exclusive_sauces")}
                         </h4>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                           {selectedItem.sauces.map((s) => (
                             <button
                               key={s}
                               onClick={() => setSauce(s)}
-                              className={`p-3 border text-[9px] uppercase transition-all cursor-pointer ${sauce === s ? "bg-earth-medium text-white border-earth-medium" : "border-sand hover:border-earth-dark bg-transparent"}`}
+                              className={`p-2 md:p-3 border text-[8px] md:text-[9px] uppercase transition-all cursor-pointer ${sauce === s ? "bg-earth-medium text-white border-earth-medium" : "text-earth-dark border-sand bg-transparent"}`}
                             >
                               {t(`ingredients_list.${s}`)}
                             </button>
@@ -568,14 +563,14 @@ const Menu = () => {
                     </>
                   ) : (
                     <div>
-                      <h4 className="text-[10px] uppercase font-bold border-b border-sand pb-2 mb-4 tracking-widest">
+                      <h4 className="text-[9px] md:text-[10px] uppercase font-bold border-b border-sand pb-2 mb-4 tracking-widest text-earth-dark">
                         {t("core_ingredients")}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {selectedItem.ingredients?.map((ing) => (
                           <span
                             key={ing}
-                            className="px-4 py-2 border border-sand/50 text-[10px] text-earth-dark uppercase italic"
+                            className="px-3 py-1 border border-sand/50 text-[9px] text-earth-dark uppercase italic"
                           >
                             {ing}
                           </span>
@@ -585,7 +580,7 @@ const Menu = () => {
                   )}
 
                   <div>
-                    <h4 className="text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest">
+                    <h4 className="text-[9px] md:text-[10px] uppercase font-black border-b border-sand pb-2 mb-4 tracking-widest text-earth-dark">
                       {selectedItem.id === 999
                         ? t("special_requests_vip")
                         : t("allergies_requests")}
@@ -594,7 +589,7 @@ const Menu = () => {
                       value={specialRequest}
                       onChange={(e) => setSpecialRequest(e.target.value)}
                       placeholder={t("placeholder_req")}
-                      className="w-full h-28 p-4 bg-white/50 border border-sand italic text-sm text-earth-dark focus:outline-none focus:border-earth-dark transition-colors resize-none placeholder:text-gray-400"
+                      className="w-full h-24 p-3 bg-white/50 border border-sand italic text-xs text-earth-dark focus:outline-none resize-none"
                     ></textarea>
                   </div>
                 </div>
@@ -613,7 +608,7 @@ const Menu = () => {
                     });
                     setSelectedItem(null);
                   }}
-                  className="mt-12 w-full py-5 bg-earth-dark text-white uppercase tracking-widest text-[11px] font-bold shadow-xl hover:bg-earth-medium transition-all cursor-pointer border-none"
+                  className="mt-6 w-full py-4 md:py-5 bg-earth-dark text-white uppercase tracking-widest text-[10px] md:text-[11px] font-bold shadow-xl hover:bg-earth-medium transition-all cursor-pointer border-none flex-shrink-0"
                 >
                   {t("add_to_plate")} — $
                   {selectedItem.price + addedSupps.length * 2}
