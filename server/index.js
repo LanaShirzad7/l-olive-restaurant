@@ -11,7 +11,12 @@ const app = express();
 // --- MIDDLEWARE ---
 app.use(
   cors({
-    origin: ["https://l-olive-restaurant.vercel.app", "http://localhost:5173"],
+    origin: [
+      "https://lolive.today", // 🎯 Your new custom domain
+      "https://www.lolive.today", // 🎯 The 'www' version
+      "https://l-olive-restaurant.vercel.app",
+      "http://localhost:5173", // For local testing
+    ],
     credentials: true,
   }),
 );
