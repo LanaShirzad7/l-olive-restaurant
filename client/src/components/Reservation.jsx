@@ -6,6 +6,9 @@ const Reservation = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // Use the environment variable for the API URL
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
+
   const times = [
     "12:00 PM",
     "1:00 PM",
@@ -49,7 +52,8 @@ const Reservation = () => {
     const user = JSON.parse(storedUser);
 
     try {
-      const response = await fetch("http://localhost:5005/api/reservations", {
+      // DYNAMIC URL: Works on localhost and Vercel!
+      const response = await fetch(`${API_URL}/api/reservations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -64,34 +68,46 @@ const Reservation = () => {
         }),
       });
 
-      if (response.ok) {
-        const existingNotes = JSON.parse(
-          localStorage.getItem("notifications") || "[]",
-        );
-        const newBookingNote = {
-          title: t("res_received"),
-          message: t("res_pending_msg", {
-            date: formData.date,
-            time: formData.time,
-          }),
-          date: new Date().toLocaleString(),
-        };
-        localStorage.setItem(
-          "notifications",
-          JSON.stringify([newBookingNote, ...existingNotes]),
-        );
-        window.dispatchEvent(new Event("update-notifications"));
-
-        setMessage(t("res_success_msg"));
-
-        setTimeout(() => navigate("/dashboard"), 2500);
-      } else {
-        const errorData = await response.json();
-        setMessage(errorData.message || t("server_error"));
+      // Handle "Unexpected token S" errors (Server crashes)
+      const contentType = response.headers.get("content-type");
+      if (!response.ok) {
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || t("server_error"));
+        } else {
+          // This catches the "Server Error" HTML page
+          throw new Error(
+            "The server is currently sleepy. Please try again in a moment.",
+          );
+        }
       }
+
+      const result = await response.json();
+      console.log("Reservation successful:", result);
+
+      // Notification Logic
+      const existingNotes = JSON.parse(
+        localStorage.getItem("notifications") || "[]",
+      );
+      const newBookingNote = {
+        title: t("res_received"),
+        message: t("res_pending_msg", {
+          date: formData.date,
+          time: formData.time,
+        }),
+        date: new Date().toLocaleString(),
+      };
+      localStorage.setItem(
+        "notifications",
+        JSON.stringify([newBookingNote, ...existingNotes]),
+      );
+      window.dispatchEvent(new Event("update-notifications"));
+
+      setMessage(t("res_success_msg"));
+      setTimeout(() => navigate("/dashboard"), 2500);
     } catch (error) {
-      console.error("Reservation Error:", error);
-      setMessage(t("server_error"));
+      console.error("Reservation Error:", error.message);
+      setMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -104,7 +120,7 @@ const Reservation = () => {
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-gradient-to-b from-[#71824F]/20 to-[#FDFCF0] flex items-center justify-center">
       <div className="w-full max-w-6xl bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden rounded-sm">
-        {/* --- LEFT SIDE: IMAGE & CONTACT --- */}
+        {/* LEFT SIDE: IMAGE & CONTACT */}
         <div className="md:w-5/12 relative min-h-[400px]">
           <img
             src="/reserve.jpg"
@@ -120,22 +136,20 @@ const Reservation = () => {
               +374 55239909
             </p>
             <p className="text-[10px] uppercase tracking-widest leading-loose opacity-70">
-              Komitas,
-              <br />
-              Nikoghayos Tigranyan 10, Yerevan
+              Komitas, Nikoghayos Tigranyan 10, Yerevan
             </p>
             <a
-              href="https://maps.app.goo.gl/jPYdbr1DGRbcjcbG6"
+              href="https://maps.google.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-[10px] uppercase border-b border-white/40 pb-1 mt-4 tracking-widest hover:text-sand transition-colors"
+              className="inline-block text-[10px] uppercase border-b border-white/40 pb-1 mt-4 tracking-widest hover:text-[#C5A28E] transition-colors"
             >
               {t("show_maps")}
             </a>
           </div>
         </div>
 
-        {/* --- RIGHT SIDE: RESERVATION FORM --- */}
+        {/* RIGHT SIDE: FORM */}
         <div className="md:w-7/12 p-8 md:p-16 bg-[#FDFCF0] flex flex-col justify-center">
           <div className="text-center mb-10">
             <p className="text-[10px] uppercase tracking-[0.4em] text-earth-medium mb-2 font-sans font-bold">
@@ -147,7 +161,6 @@ const Reservation = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Guest Breakdown */}
             <div className="grid grid-cols-2 gap-6">
               <div className="border-b border-sand pb-2">
                 <label className="block text-[10px] uppercase tracking-widest text-earth-medium mb-1 font-sans font-bold">
@@ -159,7 +172,7 @@ const Reservation = () => {
                   min="1"
                   value={formData.adults}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark focus:text-earth-medium transition-colors"
+                  className="w-full bg-transparent outline-none text-earth-dark"
                 />
               </div>
               <div className="border-b border-sand pb-2">
@@ -172,12 +185,11 @@ const Reservation = () => {
                   min="0"
                   value={formData.children}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark focus:text-earth-medium transition-colors"
+                  className="w-full bg-transparent outline-none text-earth-dark"
                 />
               </div>
             </div>
 
-            {/* Date & Time */}
             <div className="grid grid-cols-2 gap-6">
               <div className="border-b border-sand pb-2">
                 <label className="block text-[10px] uppercase tracking-widest text-earth-medium mb-1 font-sans font-bold">
@@ -189,7 +201,7 @@ const Reservation = () => {
                   required
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm cursor-pointer"
+                  className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm"
                 />
               </div>
               <div className="border-b border-sand pb-2">
@@ -200,7 +212,7 @@ const Reservation = () => {
                   name="time"
                   value={formData.time}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm cursor-pointer"
+                  className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm"
                 >
                   {times.map((t) => (
                     <option key={t} value={t}>
@@ -211,7 +223,6 @@ const Reservation = () => {
               </div>
             </div>
 
-            {/* Dining Area */}
             <div className="border-b border-sand pb-2">
               <label className="block text-[10px] uppercase tracking-widest text-earth-medium mb-1 font-sans font-bold">
                 {t("area_pref")}
@@ -220,7 +231,7 @@ const Reservation = () => {
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
-                className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm cursor-pointer"
+                className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm"
               >
                 <option value="Main Dining Room">{t("main_dining")}</option>
                 <option value="Terrace (Outdoor)">{t("terrace")}</option>
@@ -229,7 +240,6 @@ const Reservation = () => {
               </select>
             </div>
 
-            {/* Notes */}
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-earth-medium mb-2 font-sans font-bold">
                 {t("special_requests")}
@@ -239,18 +249,13 @@ const Reservation = () => {
                 value={formData.specialRequest}
                 onChange={handleChange}
                 placeholder={t("placeholder_reserve")}
-                className="w-full h-24 p-4 bg-white/40 border border-sand outline-none focus:border-earth-dark transition-colors italic text-sm resize-none placeholder:text-gray-300"
+                className="w-full h-24 p-4 bg-white/40 border border-sand outline-none focus:border-earth-dark transition-colors italic text-sm resize-none"
               ></textarea>
             </div>
 
-            {/* Feedback Message */}
             {message && (
               <p
-                className={`text-xs italic text-center animate-pulse ${
-                  message.includes("error") || message.includes("Failed")
-                    ? "text-red-600"
-                    : "text-earth-dark"
-                }`}
+                className={`text-xs italic text-center animate-pulse ${message.includes("try again") || message.includes("error") ? "text-red-600" : "text-earth-dark"}`}
               >
                 {message}
               </p>
@@ -260,7 +265,7 @@ const Reservation = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-12 py-4 bg-earth-dark text-white uppercase tracking-[0.3em] text-[10px] font-bold hover:bg-earth-medium transition-all shadow-xl disabled:opacity-50 cursor-pointer border-none"
+                className="px-12 py-4 bg-earth-dark text-white uppercase tracking-[0.3em] text-[10px] font-bold hover:bg-earth-medium transition-all shadow-xl disabled:opacity-50"
               >
                 {loading ? t("confirming") : t("btn_reserve")}
               </button>
