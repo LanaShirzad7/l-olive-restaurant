@@ -53,8 +53,7 @@ const Auth = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   // 🎯 DEFINING THE SERVER URL HERE
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
-
+  const API_BASE_URL = "https://l-olive-restaurant-wgxn.vercel.app";
   const [activeWisdom, setActiveWisdom] = useState(null);
 
   // 🎯 Wisdom pool mapped to translation keys
