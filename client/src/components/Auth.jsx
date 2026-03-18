@@ -52,6 +52,9 @@ const Auth = ({ setIsLoggedIn }) => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  // 🎯 DEFINING THE SERVER URL HERE
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
+
   const [activeWisdom, setActiveWisdom] = useState(null);
 
   // 🎯 Wisdom pool mapped to translation keys
@@ -98,14 +101,12 @@ const Auth = ({ setIsLoggedIn }) => {
     setError("");
     setMessage("Sending recovery email...");
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: formData.email.toLowerCase().trim() }),
-        },
-      );
+      // 🎯 FIXED URL
+      const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email.toLowerCase().trim() }),
+      });
       const data = await res.json();
       if (res.ok) setMessage("🌿 Check your inbox for the recovery link!");
       else setError(data.msg || "Could not send recovery email.");
@@ -120,9 +121,10 @@ const Auth = ({ setIsLoggedIn }) => {
     setError("");
     setMessage("");
 
+    // 🎯 FIXED URLs
     const url = isLogin
-      ? `${import.meta.env.VITE_API_URL}/api/auth/login`
-      : `${import.meta.env.VITE_API_URL}/api/auth/register`;
+      ? `${API_BASE_URL}/api/auth/login`
+      : `${API_BASE_URL}/api/auth/register`;
 
     try {
       const body = isLogin
@@ -277,7 +279,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   id="email"
                   name="email"
                   type="email"
-                  autocomplete="username"
+                  autoComplete="username"
                   required
                   onChange={handleChange}
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark italic border-none"
@@ -292,7 +294,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   id="password"
                   name="password"
                   type="password"
-                  autocomplete="current-password"
+                  autoComplete="current-password"
                   required
                   onChange={handleChange}
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark border-none"

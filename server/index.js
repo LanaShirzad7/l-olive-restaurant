@@ -3,23 +3,26 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
+// 1. Import your custom routes
 const authRoutes = require("./routes/auth");
 const reservationRoutes = require("./routes/reservations");
 
 const app = express();
 
 // --- MIDDLEWARE ---
+// 🎯 CORS is fixed here to include lolive.today!
 app.use(
   cors({
     origin: [
-      "https://lolive.today", // 🎯 Your new custom domain
-      "https://www.lolive.today", // 🎯 The 'www' version
+      "https://lolive.today",
+      "https://www.lolive.today",
       "https://l-olive-restaurant.vercel.app",
-      "http://localhost:5173", // For local testing
+      "http://localhost:5173",
     ],
     credentials: true,
   }),
 );
+
 app.use(express.json());
 
 // --- ROUTES ---
@@ -32,19 +35,28 @@ app.get("/", (req, res) => {
   `);
 });
 
+// Use the routes
 app.use("/api/auth", authRoutes);
 app.use("/api/reservations", reservationRoutes);
 
 // --- DATABASE CONNECTION ---
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("🍃 Connected to L'Olive Database"))
-  .catch((err) => console.error("❌ DB Error:", err.message));
+  .then(() => {
+    console.log("🍃 Connected to L'Olive Database on MongoDB Atlas");
+  })
+  .catch((err) => {
+    console.error("❌ Database connection error:", err.message);
+  });
 
+// --- SERVER LISTENER ---
+// Vercel uses its own port, so process.env.PORT is crucial here
 const PORT = process.env.PORT || 5005;
-app.listen(PORT, () => {
-  console.log(`🚀 Server on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is breathing on port ${PORT}`);
+  });
+}
 
-// 🎯 CRITICAL FOR VERCEL
+// 🎯 Export the app for Vercel
 module.exports = app;

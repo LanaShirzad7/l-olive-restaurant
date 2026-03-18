@@ -1,16 +1,12 @@
 /* eslint-disable react-hooks/immutability */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const AdminDashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🎯 CHANGED BACK TO LOCALHOST
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
-
-  useEffect(() => {
-    fetchReservations();
-  }, []);
+  const API_BASE_URL =
+    import.meta.env.MODE === "development" ? "http://localhost:5005" : "";
 
   const fetchReservations = async () => {
     try {
