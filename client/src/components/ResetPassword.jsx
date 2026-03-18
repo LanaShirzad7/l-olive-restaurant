@@ -9,6 +9,9 @@ const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
+  // 🎯 FIXED: Added your live server address here
+  const API_BASE_URL = "https://l-olive-restaurant-mhla.vercel.app";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -19,8 +22,9 @@ const ResetPassword = () => {
     }
 
     try {
+      // 🎯 FIXED: Updated the fetch URL to use your live server
       const response = await fetch(
-        `http://localhost:5005/api/auth/reset-password/${token}`,
+        `${API_BASE_URL}/api/auth/reset-password/${token}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

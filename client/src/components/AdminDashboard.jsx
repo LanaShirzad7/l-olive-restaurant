@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/immutability */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const AdminDashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL =
-    import.meta.env.MODE === "development" ? "http://localhost:5005" : "";
+  // 🎯 FIXED: Pointing directly to your new live Chef!
+  const API_BASE_URL = "https://l-olive-restaurant-mhla.vercel.app";
 
   const fetchReservations = async () => {
     try {
@@ -20,6 +20,12 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+  // Fetch reservations when the dashboard loads
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchReservations();
+  }, []);
 
   const sendNotificationToUser = (title, message) => {
     const existingNotes = JSON.parse(

@@ -52,8 +52,9 @@ const Auth = ({ setIsLoggedIn }) => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  // 🎯 DEFINING THE SERVER URL HERE
-  const API_BASE_URL = "https://l-olive-restaurant-wgxn.vercel.app";
+  // 🎯 FIXED: Pointing to your brand-new "mhla" server!
+  const API_BASE_URL = "https://l-olive-restaurant-mhla.vercel.app";
+
   const [activeWisdom, setActiveWisdom] = useState(null);
 
   // 🎯 Wisdom pool mapped to translation keys
@@ -100,7 +101,6 @@ const Auth = ({ setIsLoggedIn }) => {
     setError("");
     setMessage("Sending recovery email...");
     try {
-      // 🎯 FIXED URL
       const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,7 +120,6 @@ const Auth = ({ setIsLoggedIn }) => {
     setError("");
     setMessage("");
 
-    // 🎯 FIXED URLs
     const url = isLogin
       ? `${API_BASE_URL}/api/auth/login`
       : `${API_BASE_URL}/api/auth/register`;
