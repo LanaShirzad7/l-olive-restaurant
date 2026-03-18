@@ -15,7 +15,7 @@ const AdminDashboard = () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/reservations/all`);
 
-      // 🛡️ JSON GUARD: Stops the "Unexpected token S" error if the server is down
+      // 🛡️ JSON GUARD: Stops the "Unexpected token S" error if the server crashes
       const contentType = res.headers.get("content-type");
       if (
         !res.ok ||
@@ -44,16 +44,17 @@ const AdminDashboard = () => {
     const storedUser = localStorage.getItem("user");
 
     if (!storedUser) {
-      // No one is logged in? Send them to the auth page.
+      console.log("No user found in localStorage, redirecting to login.");
       navigate("/auth");
       return;
     }
 
     const user = JSON.parse(storedUser);
+    console.log("Logged in user data:", user); // Check F12 Console to see if isAdmin is true!
 
-    // If the user isn't an admin, they shouldn't be here!
-    // This uses the 'navigate' variable, clearing the VS Code warning.
+    // If the user isn't an admin, redirect them.
     if (!user.isAdmin) {
+      console.warn("User is not an admin. Redirecting to Home.");
       navigate("/");
     } else {
       fetchReservations();
