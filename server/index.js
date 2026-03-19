@@ -16,7 +16,12 @@ const transactionRoutes = require("./routes/transaction");
 // --- MIDDLEWARE ---
 app.use(
   cors({
-    origin: ["https://l-olive-restaurant.vercel.app", "http://localhost:5173"],
+    origin: [
+      "https://lolive.today", // 🎯 Add your main domain
+      "https://www.lolive.today", // 🎯 Add the www version
+      "https://l-olive-restaurant.vercel.app",
+      "http://localhost:5173",
+    ],
     credentials: true,
   }),
 );
