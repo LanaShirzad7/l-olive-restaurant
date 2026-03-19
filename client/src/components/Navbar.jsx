@@ -1,13 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext.jsx";
-// 🎯 1. Import the translation hook
 import { useTranslation } from "react-i18next";
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-
-  // 🎯 2. Initialize translation hook
   const { t, i18n } = useTranslation();
 
   const {
@@ -91,7 +88,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     navigate("/checkout");
   };
 
-  // 🎯 HELPER TO CHANGE LANGUAGE
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
@@ -119,7 +115,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               <span className="font-serif text-2xl md:text-3xl font-semibold tracking-wider text-earth-dark">
                 L&apos;OLIVE
               </span>
-              {/* 🎯 TRANSLATED */}
               <span className="text-earth-medium text-[8px] md:text-[10px] tracking-[0.3em] uppercase font-sans -mt-1">
                 {t("organic_kitchen")}
               </span>
@@ -180,7 +175,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
 
           <div className="flex items-center space-x-5 md:space-x-6 z-50">
-            {/* 🎯 LANGUAGE TOGGLE */}
+            {/* LANGUAGE TOGGLE */}
             <div className="hidden md:flex items-center space-x-2 text-[9px] font-sans font-bold text-earth-dark/50 tracking-widest">
               <button
                 onClick={() => changeLanguage("en")}
@@ -227,15 +222,17 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                 {isNotificationOpen && (
                   <div className="absolute right-[-40px] md:right-0 mt-6 w-[85vw] max-w-[320px] md:w-80 bg-[#FDFCF0]/95 backdrop-blur-xl border border-sand shadow-2xl p-0 z-50 animate-in fade-in zoom-in-95 duration-200 origin-top-right rounded-sm overflow-hidden">
                     <div className="p-4 border-b border-sand flex justify-between items-center bg-white/60">
+                      {/* 🎯 TRANSLATED: Sanctuary Notices */}
                       <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-earth-medium">
-                        Sanctuary Notices
+                        {t("notifications.title")}
                       </h4>
                       {notifications.length > 0 && (
                         <button
                           onClick={clearNotifications}
                           className="text-[9px] text-gray-400 bg-transparent cursor-pointer hover:text-red-800 uppercase font-bold tracking-widest transition-colors border-none"
                         >
-                          Clear All
+                          {/* 🎯 TRANSLATED: Clear All */}
+                          {t("notifications.clear_all")}
                         </button>
                       )}
                     </div>
@@ -266,8 +263,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                       ) : (
                         <div className="p-12 text-center bg-white/30">
                           <i className="fas fa-wind text-2xl text-sand mb-3"></i>
+                          {/* 🎯 TRANSLATED: Empty Notifications */}
                           <p className="text-xs italic text-gray-400 font-serif">
-                            Your sanctuary is peaceful.
+                            {t("notifications.empty")}
                           </p>
                         </div>
                       )}
@@ -420,7 +418,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           ></div>
           <div className="relative w-full max-w-md bg-[#FDFCF0] h-full shadow-2xl flex flex-col font-serif animate-in slide-in-from-right duration-300">
             <div className="p-8 border-b border-sand flex justify-between items-center bg-white/30">
-              <h2 className="text-3xl text-earth-dark italic">Your Order</h2>
+              {/* 🎯 TRANSLATED: Your Order */}
+              <h2 className="text-3xl text-earth-dark italic">
+                {t("cart.your_order")}
+              </h2>
               <button
                 onClick={() => setIsCartOpen(false)}
                 className="text-earth-dark hover:text-earth-light bg-transparent cursor-pointer text-xl border-none transition-colors"
@@ -432,8 +433,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               {cart.length === 0 ? (
                 <div className="text-center py-32">
                   <i className="fas fa-shopping-basket text-4xl text-sand mb-4"></i>
+                  {/* 🎯 TRANSLATED: Empty Cart */}
                   <p className="text-gray-400 italic font-serif text-lg">
-                    Your basket is empty.
+                    {t("cart.empty")}
                   </p>
                 </div>
               ) : (
@@ -444,7 +446,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                       className="flex justify-between items-center border-b border-sand/50 pb-6"
                     >
                       <div>
-                        <h4 className="text-xl text-earth-dark">{item.name}</h4>
+                        {/* 🎯 TRANSLATED DYNAMICALLY: Food Item Name */}
+                        <h4 className="text-xl text-earth-dark">
+                          {t(item.name)}
+                        </h4>
                         <p className="text-xs font-sans uppercase tracking-widest text-earth-medium mt-1">
                           ${item.price}
                         </p>
@@ -474,18 +479,20 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             {cart.length > 0 && (
               <div className="p-8 border-t border-sand bg-white/50">
                 <div className="flex justify-between items-end mb-8">
+                  {/* 🎯 TRANSLATED: Subtotal */}
                   <span className="uppercase tracking-[0.2em] text-[10px] font-sans font-bold text-gray-400">
-                    Subtotal
+                    {t("cart.subtotal")}
                   </span>
                   <span className="text-4xl text-earth-dark font-light tracking-tighter">
                     ${cartTotal.toFixed(2)}
                   </span>
                 </div>
+                {/* 🎯 TRANSLATED: Proceed to Checkout */}
                 <button
                   onClick={handleCheckoutNavigation}
                   className="w-full py-5 bg-earth-dark text-cream hover:bg-earth-medium transition-colors uppercase tracking-[0.3em] text-xs font-sans font-bold cursor-pointer border-none shadow-xl"
                 >
-                  Proceed to Checkout
+                  {t("cart.proceed_checkout")}
                 </button>
               </div>
             )}

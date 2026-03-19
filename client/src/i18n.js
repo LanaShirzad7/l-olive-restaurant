@@ -223,7 +223,8 @@ const resources = {
       res_cancelled: "Reservation Cancelled",
       res_released_msg:
         "Your table for {{date}} has been successfully released.",
-      //about us
+
+      // --- ABOUT US ---
       heritage: "Our Heritage",
       about_title: "The L'Olive Story",
       about_subtitle: "A sanctuary for conscious eating, rooted in nature.",
@@ -241,10 +242,59 @@ const resources = {
       soulful_craft: "Soulful Craft",
       soulful_craft_desc:
         "Food is medicine. We prepare every dish with intention and quiet reverence.",
-      //footer
+
+      // --- FOOTER ---
       scan_explore: "Scan to Explore",
       follow_harvest: "Follow the Harvest",
       all_rights: "ALL RIGHTS RESERVED",
+
+      // --- CHECKOUT ---
+      checkout: {
+        empty_harvest: "Empty Harvest",
+        basket_empty: "Your basket is currently empty.",
+        explore_menu: "Explore the Menu",
+        final_step: "Final Step",
+        title: "Checkout",
+        payment_info: "Payment Information",
+        cardholder_name: "Cardholder Name",
+        enter_name: "Enter your name",
+        card_details: "Card Details",
+        expiry: "Expiry",
+        cvc: "CVC",
+        verifying: "Verifying Transaction...",
+        confirm_payment: "Confirm Payment",
+        your_selection: "Your Selection",
+        quantity: "Quantity",
+        lolive_circle: "L'Olive Circle",
+        balance: "Balance",
+        pts: "pts",
+        redemption_applied: "Redemption Applied ✓",
+        apply_points: "Apply Points to Order",
+        insufficient_points: "Insufficient Points",
+        subtotal: "Subtotal",
+        circle_discount: "Circle Discount",
+        delivery: "Delivery",
+        complimentary: "Complimentary",
+        total: "Total",
+        secured_by: "Secured by L'Olive Organic encryption",
+        alert_points: "Points Redeemed! Order Successful.",
+        alert_success:
+          "Payment Successful! Your organic meal is being prepared.",
+      },
+
+      // --- CART ---
+      cart: {
+        your_order: "Your Order",
+        subtotal: "Subtotal",
+        proceed_checkout: "Proceed to Checkout",
+        empty: "Your basket is empty.",
+      },
+      // --- NOTIFICATIONS ---
+      notifications: {
+        title: "Sanctuary Notices",
+        clear_all: "Clear All",
+        empty: "Your sanctuary is peaceful.",
+      },
     },
   },
   hy: {
@@ -432,7 +482,8 @@ const resources = {
       release_confirm: "Վերադարձնե՞նք այս սեղանը ապաստանին:",
       res_cancelled: "Ամրագրումը Չեղարկված է",
       res_released_msg: "Ձեր սեղանը {{date}}-ի համար հաջողությամբ ազատվել է:",
-      //about us
+
+      // --- ABOUT US ---
       heritage: "Մեր Ժառանգությունը",
       about_title: "L'Olive-ի Պատմությունը",
       about_subtitle: "Գիտակից սնվելու սրբավայր՝ արմատավորված բնության մեջ:",
@@ -450,10 +501,59 @@ const resources = {
       soulful_craft: "Հոգով Արված",
       soulful_craft_desc:
         "Սնունդը դեղամիջոց է: Մենք պատրաստում ենք յուրաքանչյուր ուտեստ մտադրությամբ և խորին հարգանքով:",
-      //footer
+
+      // --- FOOTER ---
       scan_explore: "Սկանավորեք",
       follow_harvest: "Հետևեք բերքին",
       all_rights: "ԲՈԼՈՐ ԻՐԱՎՈՒՆՔՆԵՐԸ ՊԱՇՏՊԱՆՎԱԾ ԵՆ",
+
+      // --- CHECKOUT ---
+      checkout: {
+        empty_harvest: "Դատարկ Զամբյուղ",
+        basket_empty: "Ձեր զամբյուղը ներկայումս դատարկ է:",
+        explore_menu: "Բացահայտել Ճաշացանկը",
+        final_step: "Վերջնական Քայլ",
+        title: "Վճարում",
+        payment_info: "Վճարման Տեղեկատվություն",
+        cardholder_name: "Քարտապանի Անուն",
+        enter_name: "Մուտքագրեք ձեր անունը",
+        card_details: "Քարտի Տվյալներ",
+        expiry: "Վավերականություն",
+        cvc: "CVC",
+        verifying: "Գործարքի Հաստատում...",
+        confirm_payment: "Հաստատել Վճարումը",
+        your_selection: "Ձեր Ընտրությունը",
+        quantity: "Քանակ",
+        lolive_circle: "L'Olive Ակումբ",
+        balance: "Մնացորդ",
+        pts: "միավոր",
+        redemption_applied: "Միավորները Կիրառված են ✓",
+        apply_points: "Կիրառել Միավորները",
+        insufficient_points: "Անբավարար Միավորներ",
+        subtotal: "Ենթագումար",
+        circle_discount: "Ակումբի Զեղչ",
+        delivery: "Առաքում",
+        complimentary: "Անվճար",
+        total: "Ընդամենը",
+        secured_by: "Պաշտպանված է L'Olive-ի գաղտնագրմամբ",
+        alert_points:
+          "Միավորները Օգտագործված են: Պատվերը հաջողությամբ գրանցվեց:",
+        alert_success: "Վճարումը հաջողվեց: Ձեր օրգանական ճաշը պատրաստվում է:",
+      },
+
+      // --- CART ---
+      cart: {
+        your_order: "Ձեր Պատվերը",
+        subtotal: "Ենթագումար",
+        proceed_checkout: "Անցնել Վճարման",
+        empty: "Ձեր զամբյուղը դատարկ է:",
+      },
+      // --- NOTIFICATIONS ---
+      notifications: {
+        title: "Ապաստանի Ծանուցումներ",
+        clear_all: "Մաքրել Բոլորը",
+        empty: "Ձեր ապաստանը խաղաղ է:",
+      },
     },
   },
   ru: {
@@ -571,7 +671,7 @@ const resources = {
         Mayonnaise: "Майонез",
         "Secret Sauce": "Секретный Соус",
         Atomic: "Атомик",
-        Samurai: "Самурай",
+        Самурай: "Самурай",
         "Pepper Sauce": "Перечный Соус",
       },
       contact_us: "Связаться с нами",
@@ -626,7 +726,8 @@ const resources = {
         tip_2_1: "Горечь в зелени — это лекарство.",
         tip_2_2: "Масло холодного отжима помнит солнце.",
       },
-      // --- DASHBOARD MOVED INSIDE ---
+
+      // --- DASHBOARD ---
       member_sanctuary: "Участник Обители",
       save: "Сохранить",
       cancel: "Отмена",
@@ -642,7 +743,8 @@ const resources = {
       release_confirm: "Вернуть этот столик обратно обители?",
       res_cancelled: "Бронирование Отменено",
       res_released_msg: "Ваш столик на {{date}} был успешно освобожден.",
-      //about us
+
+      // --- ABOUT US ---
       heritage: "Наше Наследие",
       about_title: "История L'Olive",
       about_subtitle:
@@ -661,10 +763,59 @@ const resources = {
       soulful_craft: "Душевный Труд",
       soulful_craft_desc:
         "Еда — это лекарство. Мы готовим каждое блюдо с намерением и тихим почтением.",
-      //footer
+
+      // --- FOOTER ---
       scan_explore: "Сканируйте",
       follow_harvest: "Следите за урожаем",
       all_rights: "ВСЕ ПРАВА ЗАЩИЩЕНЫ",
+
+      // --- CHECKOUT ---
+      checkout: {
+        empty_harvest: "Пустая Корзина",
+        basket_empty: "Ваша корзина в данный момент пуста.",
+        explore_menu: "Изучить Меню",
+        final_step: "Последний Шаг",
+        title: "Оформление Заказа",
+        payment_info: "Информация об Оплате",
+        cardholder_name: "Имя Владельца Карты",
+        enter_name: "Введите ваше имя",
+        card_details: "Данные Карты",
+        expiry: "Срок Действия",
+        cvc: "CVC",
+        verifying: "Проверка Транзакции...",
+        confirm_payment: "Подтвердить Оплату",
+        your_selection: "Ваш Выбор",
+        quantity: "Количество",
+        lolive_circle: "Клуб L'Olive",
+        balance: "Баланс",
+        pts: "баллов",
+        redemption_applied: "Баллы Применены ✓",
+        apply_points: "Использовать Баллы",
+        insufficient_points: "Недостаточно Баллов",
+        subtotal: "Подытог",
+        circle_discount: "Скидка Клуба",
+        delivery: "Доставка",
+        complimentary: "Бесплатно",
+        total: "Итого",
+        secured_by: "Защищено шифрованием L'Olive Organic",
+        alert_points: "Баллы Использованы! Заказ Успешно Оформлен.",
+        alert_success:
+          "Оплата Прошла Успешно! Ваше органическое блюдо готовится.",
+      },
+
+      // --- CART ---
+      cart: {
+        your_order: "Ваш Заказ",
+        subtotal: "Подытог",
+        proceed_checkout: "Перейти к Оплате",
+        empty: "Ваша корзина пуста.",
+      },
+      // --- NOTIFICATIONS ---
+      notifications: {
+        title: "Уведомления Обители",
+        clear_all: "Очистить Все",
+        empty: "В вашей обители спокойно.",
+      },
     },
   },
 };
