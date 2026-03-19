@@ -8,11 +8,23 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // 🎯 Ensure this port matches your backend terminal!
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
   const fetchReservations = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/reservations/all`);
+      const token = localStorage.getItem("token"); // 🎯 GET THE KEY
+
+      const res = await fetch(`${API_BASE_URL}/api/reservations/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🎯 SEND THE KEY
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        throw new Error("Unauthorized Access. Please log in again.");
+      }
 
       const contentType = res.headers.get("content-type");
       if (
@@ -20,9 +32,7 @@ const AdminDashboard = () => {
         !contentType ||
         !contentType.includes("application/json")
       ) {
-        throw new Error(
-          "The Sanctuary server is currently waking up. Please refresh in a moment.",
-        );
+        throw new Error("Could not connect to the Sanctuary server.");
       }
 
       const data = await res.json();
@@ -30,7 +40,12 @@ const AdminDashboard = () => {
       setError("");
     } catch (err) {
       console.error("Fetch error:", err);
-      setError(err.message);
+      // If it literally can't connect, err.message is usually "Failed to fetch"
+      setError(
+        err.message === "Failed to fetch"
+          ? "Connection Refused: Is your backend server running on port 5005?"
+          : err.message,
+      );
       setReservations([]);
     } finally {
       setLoading(false);
@@ -39,17 +54,15 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
 
-    if (!storedUser) {
-      console.log("No user found in localStorage, redirecting to login.");
+    if (!storedUser || !token) {
       navigate("/auth");
       return;
     }
 
     const user = JSON.parse(storedUser);
-
     if (!user.isAdmin) {
-      console.warn("User is not an admin. Redirecting to Home.");
       navigate("/");
     } else {
       fetchReservations();
@@ -58,9 +71,13 @@ const AdminDashboard = () => {
 
   const updateStatus = async (id, status) => {
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_BASE_URL}/api/reservations/${id}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 🎯 SEND TOKEN
+        },
         body: JSON.stringify({ status }),
       });
 
@@ -76,8 +93,12 @@ const AdminDashboard = () => {
     if (!window.confirm(`Purge reservation for ${date}?`)) return;
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // 🎯 SEND TOKEN
+        },
       });
       if (res.ok) {
         setReservations((prev) => prev.filter((r) => r._id !== id));
@@ -105,9 +126,16 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-gradient-to-b from-[#71824F]/20 to-[#FDFCF0]">
       <div className="max-w-7xl mx-auto">
+        {/* ERROR DISPLAY */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 text-sm italic rounded-sm text-center">
-            {error}
+          <div className="mb-6 p-6 bg-white border-l-4 border-red-600 shadow-md text-red-800 rounded-sm flex items-center gap-4">
+            <i className="fas fa-exclamation-triangle"></i>
+            <div>
+              <p className="font-bold uppercase text-[10px] tracking-widest">
+                System Error
+              </p>
+              <p className="italic text-sm">{error}</p>
+            </div>
           </div>
         )}
 
@@ -148,9 +176,9 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* TABLE */}
-        <div className="bg-white/40 backdrop-blur-md border border-sand shadow-xl rounded-sm overflow-hidden">
-          <table className="w-full text-left border-collapse">
+        {/* TABLE WRAPPER - SCROLLABLE FOR MOBILE */}
+        <div className="bg-white/40 backdrop-blur-md border border-sand shadow-xl rounded-sm overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left border-collapse">
             <thead>
               <tr className="bg-earth-dark text-white uppercase text-[10px] tracking-[0.3em] font-sans">
                 <th className="p-6">Guest</th>
@@ -166,7 +194,6 @@ const AdminDashboard = () => {
                   key={res._id}
                   className="hover:bg-white/60 transition-colors group"
                 >
-                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
                   <td className="p-6 align-middle">
                     <p className="font-bold text-earth-dark italic">
                       {res.userName || "Guest"}
@@ -175,28 +202,20 @@ const AdminDashboard = () => {
                       {res.userEmail}
                     </p>
                   </td>
-
-                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
                   <td className="p-6 align-middle">
                     <p className="text-earth-dark font-sans font-bold text-sm">
                       {res.date}
                     </p>
                     <p className="text-xs text-gray-400 italic">{res.time}</p>
                   </td>
-
-                  {/* 🎯 ALIGNMENT FIX: Added align-middle and fixed the empty area box bug */}
                   <td className="p-6 align-middle">
-                    {res.area && (
-                      <span className="text-[10px] uppercase font-bold text-earth-medium bg-sand/30 px-2 py-1 inline-block mb-1">
-                        {res.area}
-                      </span>
-                    )}
+                    <span className="text-[10px] uppercase font-bold text-earth-medium bg-sand/30 px-2 py-1 inline-block mb-1">
+                      {res.area || "Main Sanctuary"}
+                    </span>
                     <p className="text-sm font-sans font-bold text-earth-dark">
                       {res.guests} Guests
                     </p>
                   </td>
-
-                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
                   <td className="p-6 align-middle">
                     <span
                       className={`px-3 py-1 text-[9px] font-bold uppercase rounded-full inline-block ${
@@ -210,13 +229,11 @@ const AdminDashboard = () => {
                       {res.status || "Pending"}
                     </span>
                   </td>
-
-                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
                   <td className="p-6 text-right align-middle print:hidden">
                     <div className="flex justify-end items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => updateStatus(res._id, "confirmed")}
-                        className="bg-earth-dark text-white px-4 py-2 text-[10px] uppercase font-bold cursor-pointer border-none"
+                        className="bg-earth-dark text-white px-4 py-2 text-[10px] uppercase font-bold cursor-pointer border-none shadow-md"
                       >
                         Approve
                       </button>

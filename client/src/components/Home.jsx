@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react"; // 🎯 Added useRef and useEffect
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const Home = () => {
   const { t } = useTranslation();
-  const videoRef = useRef(null); // 🎯 Create a reference to the video
+  const videoRef = useRef(null);
 
-  // 🎯 This "forces" the video to play and stay muted on mobile
+  // 🎯 Forces the video to play and stay muted on mobile
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.defaultMuted = true;
@@ -18,20 +18,20 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="relative font-serif bg-cream min-h-screen">
-      {/* 1. Hero Section */}
+    <div className="relative font-serif bg-cream min-h-screen overflow-x-hidden">
+      {/* 1. HERO SECTION */}
       <header className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <video
-            ref={videoRef} // 🎯 Attach the reference here
+            ref={videoRef}
             src="/IMG_2902.mp4"
             autoPlay
             loop
             muted
             playsInline
             disablePictureInPicture
-            controls={false} // 🎯 Explicitly tell React NO controls
-            className="w-full h-full object-cover pointer-events-none" // 🎯 pointer-events-none stops clicks from showing controls
+            controls={false}
+            className="w-full h-full object-cover pointer-events-none"
           >
             Your browser does not support the video tag.
           </video>
@@ -54,7 +54,7 @@ const Home = () => {
         </div>
       </header>
 
-      {/* 2. Manifesto Section */}
+      {/* 2. MANIFESTO SECTION */}
       <section className="py-20 md:py-32 bg-cream">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -63,14 +63,14 @@ const Home = () => {
               <img
                 src="/home.avif"
                 alt="Chef"
-                className="relative z-10 w-full h-auto shadow-xl hover:grayscale-0 transition-all duration-700"
+                className="relative z-10 w-full h-auto shadow-xl transition-all duration-700"
               />
             </div>
             <div className="text-center md:text-left">
               <span className="text-earth-medium uppercase tracking-widest text-xs font-sans font-bold mb-2 block">
                 {t("our_philosophy")}
               </span>
-              <h2 className="text-4xl md:text-5xl mb-8 text-earth-dark font-normal">
+              <h2 className="text-4xl md:text-5xl mb-8 text-earth-dark font-normal leading-tight">
                 {t("soil_to_soul")}
               </h2>
               <p className="text-gray-600 mb-6 leading-relaxed font-light">
@@ -87,7 +87,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 3. Quote Section */}
+      {/* 3. QUOTE SECTION */}
       <section
         className="relative py-40 bg-fixed bg-center bg-cover"
         style={{
@@ -106,10 +106,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. Membership Section */}
-      <section className="py-32 bg-[#FDFCF0] overflow-hidden">
+      {/* 4. MEMBERSHIP SECTION - FIXED LAYOUT */}
+      <section className="py-24 md:py-32 bg-[#FDFCF0]">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            {/* TEXT CONTENT */}
             <div className="order-2 lg:order-1">
               <span className="text-earth-medium uppercase tracking-[0.3em] text-[10px] font-sans font-bold mb-4 block">
                 {t("membership")}
@@ -121,21 +122,54 @@ const Home = () => {
                 {t("circle_desc")}
               </p>
 
-              <div className="space-y-8 mb-12">
+              <div className="space-y-10 mb-12">
                 <div className="flex gap-6">
                   <span className="text-earth-medium font-serif italic text-2xl">
                     01
                   </span>
                   <div>
                     <h4 className="text-[11px] uppercase tracking-widest font-bold text-earth-dark mb-1 font-sans">
-                      {t("benefit_1_title")}
+                      {t("The Harvest Collection")}
                     </h4>
                     <p className="text-sm text-gray-500 italic">
-                      {t("benefit_1_desc")}
+                      {t(
+                        "Every visit to our sanctuary is an investment in your well-being. Earn 100 Harvest Points for every $1 spent, allowing you to cultivate rewards that nourish your future dining experiences.",
+                      )}
                     </p>
                   </div>
                 </div>
-                {/* ... other benefits ... */}
+
+                <div className="flex gap-6">
+                  <span className="text-earth-medium font-serif italic text-2xl">
+                    02
+                  </span>
+                  <div>
+                    <h4 className="text-[11px] uppercase tracking-widest font-bold text-earth-dark mb-1 font-sans">
+                      {t("Digital Wallet Sanctuary")}
+                    </h4>
+                    <p className="text-sm text-gray-500 italic">
+                      {t(
+                        "Experience effortless dining with our integrated wallet. Seamlessly convert your points into sanctuary credits, receive 3% automatic cashback on every order, and manage your balance with absolute transparency.",
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-6">
+                  <span className="text-earth-medium font-serif italic text-2xl">
+                    03
+                  </span>
+                  <div>
+                    <h4 className="text-[11px] uppercase tracking-widest font-bold text-earth-dark mb-1 font-sans">
+                      {t("Priority Sanctuary Access")}
+                    </h4>
+                    <p className="text-sm text-gray-500 italic">
+                      {t(
+                        "As a member of our organic community, you move to the front of the harvest. Enjoy early access to seasonal menu reveals, priority booking for our popular weekend brunches, and invitations to exclusive chef-led tasting events.",
+                      )}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <Link
@@ -146,28 +180,30 @@ const Home = () => {
               </Link>
             </div>
 
-            <div className="order-1 lg:order-2 relative">
-              <div className="absolute inset-0 bg-earth-medium/10 blur-[100px] rounded-full"></div>
-              <div className="relative bg-earth-dark p-12 rounded-sm shadow-2xl text-cream overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 opacity-10 text-9xl italic select-none">
+            {/* THE CARD DESIGN - FIXED SIZING */}
+            <div className="order-1 lg:order-2 relative w-full flex justify-center">
+              <div className="absolute inset-0 bg-earth-medium/10 blur-[80px] rounded-full"></div>
+              <div className="relative bg-earth-dark p-10 md:p-14 rounded-sm shadow-2xl text-cream w-full max-w-lg overflow-hidden min-h-[350px] flex flex-col justify-between">
+                {/* Decorative background "O" */}
+                <div className="absolute top-[-20px] right-[-20px] opacity-10 text-[12rem] italic select-none leading-none">
                   O
                 </div>
-                <div className="relative z-10 space-y-20">
-                  <div className="flex justify-between items-start">
-                    <div className="border border-cream/30 px-3 py-1 rounded-full">
-                      <p className="text-[8px] uppercase tracking-widest">
-                        {t("premium_member")}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.4em] opacity-50 mb-2 font-sans">
-                      {t("collector_points")}
+
+                <div className="relative z-10">
+                  <div className="border border-cream/30 px-4 py-1 rounded-full w-fit">
+                    <p className="text-[9px] uppercase tracking-widest">
+                      {t("premium_member")}
                     </p>
-                    <h3 className="text-5xl font-light italic">
-                      {t("lolive_circle")}
-                    </h3>
                   </div>
+                </div>
+
+                <div className="relative z-10">
+                  <p className="text-[10px] uppercase tracking-[0.4em] opacity-50 mb-4 font-sans">
+                    {t("collector_points")}
+                  </p>
+                  <h3 className="text-4xl md:text-6xl font-light italic leading-none">
+                    {t("lolive_circle")}
+                  </h3>
                 </div>
               </div>
             </div>

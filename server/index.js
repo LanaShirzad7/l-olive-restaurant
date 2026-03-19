@@ -3,41 +3,43 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-// 1. Import your custom routes
-const authRoutes = require("./routes/auth");
-const reservationRoutes = require("./routes/reservations");
-
+// 1. Initialize Express
 const app = express();
 
+// 2. Import Route Handlers
+// 🎯 CRITICAL: These must match your filenames in the /routes folder!
+const authRoutes = require("./routes/auth");
+const reservationRoutes = require("./routes/reservations");
+const orderRoutes = require("./routes/order");
+const transactionRoutes = require("./routes/transaction");
+
 // --- MIDDLEWARE ---
-// 🎯 CORS is fixed here to include lolive.today!
 app.use(
   cors({
-    origin: [
-      "https://lolive.today",
-      "https://www.lolive.today",
-      "https://l-olive-restaurant.vercel.app",
-      "http://localhost:5173",
-    ],
+    origin: ["https://l-olive-restaurant.vercel.app", "http://localhost:5173"],
     credentials: true,
   }),
 );
 
 app.use(express.json());
 
-// --- ROUTES ---
+// --- BASE ROUTE ---
 app.get("/", (req, res) => {
   res.status(200).send(`
-    <div style="font-family: sans-serif; text-align: center; padding: 50px; background-color: #F5F5DC; min-height: 100vh;">
+    <div style="font-family: sans-serif; text-align: center; padding: 50px; background-color: #FDFCF0; min-height: 100vh;">
       <h1 style="color: #2D2926;">🍃 L'Olive Organic Kitchen API</h1>
-      <p style="color: #8B735B;">Status: Online & Connected</p>
+      <p style="color: #71824F; font-weight: bold;">Status: Online & Breathing</p>
     </div>
   `);
 });
 
-// Use the routes
+// --- API ROUTES ---
 app.use("/api/auth", authRoutes);
 app.use("/api/reservations", reservationRoutes);
+
+// 🎯 YOUR ADDED LINES HERE
+app.use("/api/orders", orderRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 // --- DATABASE CONNECTION ---
 mongoose
@@ -50,13 +52,14 @@ mongoose
   });
 
 // --- SERVER LISTENER ---
-// Vercel uses its own port, so process.env.PORT is crucial here
 const PORT = process.env.PORT || 5005;
+
+// Only listen if we are NOT on Vercel (local development)
 if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
     console.log(`🚀 Server is breathing on port ${PORT}`);
   });
 }
 
-// 🎯 Export the app for Vercel
+// 🎯 Export for Vercel
 module.exports = app;

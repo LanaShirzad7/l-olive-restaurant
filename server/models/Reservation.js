@@ -1,11 +1,7 @@
 const mongoose = require("mongoose");
 
 const ReservationSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+  // The person making the booking
   userName: {
     type: String,
     required: true,
@@ -14,28 +10,35 @@ const ReservationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Booking Details
   date: {
-    type: String,
+    type: String, // Stored as string (e.g., "2024-05-20") for easier frontend display
     required: true,
   },
   time: {
-    type: String,
+    type: String, // Stored as string (e.g., "19:00")
     required: true,
   },
   guests: {
     type: Number,
     required: true,
   },
-  // 👇 The new Special Requests field
+  // Preferences
   specialRequests: {
     type: String,
     default: "",
   },
+  area: {
+    type: String,
+    default: "Main Sanctuary",
+  },
+  // Status Logic for the Admin Panel
   status: {
     type: String,
     enum: ["pending", "confirmed", "declined"],
     default: "pending",
   },
+  // Timestamp for sorting the Manifest
   createdAt: {
     type: Date,
     default: Date.now,

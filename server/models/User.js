@@ -15,21 +15,20 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // 🎯 ADDED: This tells the database to remember who is an Admin!
   isAdmin: {
     type: Boolean,
     default: false,
-  },
-  resetPasswordToken: {
-    type: String,
-  },
-  resetPasswordExpires: {
-    type: Date,
   },
   points: {
     type: Number,
     default: 0,
   },
+  walletBalance: {
+    type: Number,
+    default: 0,
+  },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   createdAt: {
     type: Date,
     default: Date.now,

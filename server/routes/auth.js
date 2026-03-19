@@ -13,9 +13,7 @@ router.post("/register", async (req, res) => {
     const email = req.body.email.toLowerCase().trim();
 
     let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ msg: "User already exists" });
-    }
+    if (user) return res.status(400).json({ msg: "User already exists" });
 
     user = new User({ name, email, password });
     const salt = await bcrypt.genSalt(10);
@@ -34,13 +32,12 @@ router.post("/register", async (req, res) => {
         name: user.name,
         email: user.email,
         points: user.points,
+        walletBalance: user.walletBalance, // 🎯 Added
         isAdmin: user.isAdmin,
       },
-      msg: "Registration successful! Redirecting...",
+      msg: "Registration successful!",
     });
   } catch (err) {
-    console.error("Signup Error:", err.message);
-    // 🎯 FIXED: Sending JSON instead of plain text
     res.status(500).json({ msg: "Server Error during registration" });
   }
 });
@@ -69,69 +66,42 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         points: user.points,
+        walletBalance: user.walletBalance, // 🎯 Added
         isAdmin: user.isAdmin,
       },
     });
   } catch (err) {
-    console.error("Login Error:", err.message);
-    // 🎯 FIXED: Sending JSON instead of plain text
     res.status(500).json({ msg: "Server Error during login" });
   }
 });
 
-// --- FORGOT PASSWORD ROUTE ---
-router.post("/forgot-password", async (req, res) => {
+// --- 🎯 NEW: REDEEM POINTS ROUTE ---
+router.post("/redeem-points", async (req, res) => {
   try {
-    const email = req.body.email.toLowerCase().trim();
-    const user = await User.findOne({ email });
+    const { userId } = req.body;
+    const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ msg: "No account found with that email." });
-    }
+    if (!user) return res.status(404).json({ msg: "User not found" });
+    if (user.points < 100)
+      return res.status(400).json({ msg: "Minimum 100 points required" });
 
-    const resetToken = crypto.randomBytes(20).toString("hex");
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000;
+    // Conversion: 100 points = $1.00
+    const conversionRate = 0.01;
+    const cashValue = user.points * conversionRate;
+
+    user.walletBalance += cashValue;
+    user.points = 0; // Reset points
     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+    res.json({
+      msg: "Success!",
+      points: user.points,
+      walletBalance: user.walletBalance,
     });
-
-    const frontendBaseUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://lolive.today"
-        : "http://localhost:5173";
-
-    const resetUrl = `${frontendBaseUrl}/reset-password/${resetToken}`;
-
-    const mailOptions = {
-      from: `"L'Olive Kitchen" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject: "Password Reset Request | L'Olive",
-      html: `
-        <div style="font-family: serif; color: #2D2926; text-align: center; padding: 40px; background-color: #FDFCF0; border: 1px solid #D2B48C;">
-          <h1 style="font-style: italic;">L'OLIVE</h1>
-          <hr style="border: none; border-top: 1px solid #D2B48C; margin: 20px 0;" />
-          <p>You requested a password reset. Click the button below to choose a new password:</p>
-          <a href="${resetUrl}" style="display: inline-block; background-color: #71824F; color: white; padding: 12px 25px; text-decoration: none; margin: 20px 0; font-family: sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: bold;">Reset Password</a>
-          <p style="font-size: 10px; color: #8B735B;">This link will expire in 1 hour.</p>
-        </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.json({ msg: "A recovery link has been sent to your email." });
   } catch (err) {
-    console.error("Forgot Password Error:", err);
-    res.status(500).json({ msg: "Server error sending email." });
+    res.status(500).json({ msg: "Redemption failed" });
   }
 });
-
 // --- RESET PASSWORD ROUTE ---
 router.post("/reset-password/:token", async (req, res) => {
   try {
