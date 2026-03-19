@@ -3,14 +3,15 @@ const router = express.Router();
 const Reservation = require("../models/Reservation");
 const nodemailer = require("nodemailer");
 
-// --- REUSABLE EMAIL FUNCTION ---
-const sendEmail = (toEmail, subject, htmlContent) => {
+// --- 1. REUSABLE ASYNC EMAIL FUNCTION ---
+// We use 'async' here so we can 'await' the delivery in our routes.
+const sendEmail = async (toEmail, subject, htmlContent) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, // IMPORTANT: Use a 16-digit Gmail App Password here!
       },
     });
 
@@ -28,19 +29,18 @@ const sendEmail = (toEmail, subject, htmlContent) => {
       `,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("❌ EMAIL FAILED TO SEND:", error.message);
-      } else {
-        console.log(`✉️ EMAIL SENT SUCCESSFULLY TO: ${toEmail}`);
-      }
-    });
-  } catch (emailErr) {
-    console.log("❌ Email Setup Error:", emailErr.message);
+    // Await ensures Vercel stays "awake" until the email is handed to Gmail
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✉️ EMAIL SENT SUCCESSFULLY TO: ${toEmail}`);
+    return info;
+  } catch (error) {
+    console.log("❌ EMAIL FAILED TO SEND:", error.message);
+    // We don't throw the error here so the user still gets their reservation saved
+    // even if the email system has a hiccup.
   }
 };
 
-// 1. CREATE A RESERVATION
+// --- 2. CREATE A RESERVATION ---
 router.post("/", async (req, res) => {
   try {
     const {
@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
 
     await newReservation.save();
 
-    // 🎯 1. EMAIL TO THE GUEST
+    // 🎯 1. EMAIL TO THE GUEST (Awaited)
     const pendingHtml = `
       <h2 style="color: #3D4828;">Hello, ${userName}</h2>
       <p style="color: #6B705C;">We have received your request. It is currently <strong>pending</strong> admin approval.</p>
@@ -80,9 +80,13 @@ router.post("/", async (req, res) => {
       </div>
       <p style="color: #6B705C;">We will notify you once your table is confirmed.</p>
     `;
-    sendEmail(userEmail, "Reservation Request Received | L'Olive", pendingHtml);
+    await sendEmail(
+      userEmail,
+      "Reservation Request Received | L'Olive",
+      pendingHtml,
+    );
 
-    // 🎯 2. EMAIL TO THE ADMIN (You)
+    // 🎯 2. EMAIL TO THE ADMIN (Awaited)
     const adminHtml = `
       <h2 style="color: #3D4828;">A New Table Has Been Set</h2>
       <p style="color: #6B705C;">A new reservation requires your approval.</p>
@@ -97,7 +101,7 @@ router.post("/", async (req, res) => {
       </div>
       <p style="font-size: 12px; color: #888;">Log into the L'Olive Admin Dashboard to confirm or decline.</p>
     `;
-    sendEmail(
+    await sendEmail(
       "lana.shirzad@gmail.com",
       `🌿 New Reservation Alert: ${guests} Guests`,
       adminHtml,
@@ -105,11 +109,12 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(newReservation);
   } catch (error) {
+    console.error("Reservation Error:", error);
     res.status(500).json({ message: "Server error while booking." });
   }
 });
 
-// 2. FETCH USER RESERVATIONS
+// --- 3. FETCH USER RESERVATIONS ---
 router.get("/my-reservations", async (req, res) => {
   try {
     const userEmail = req.query.email;
@@ -121,7 +126,7 @@ router.get("/my-reservations", async (req, res) => {
   }
 });
 
-// 3. ADMIN: UPDATE STATUS
+// --- 4. ADMIN: UPDATE STATUS ---
 router.patch("/:id/status", async (req, res) => {
   const { status } = req.body;
   try {
@@ -131,27 +136,24 @@ router.patch("/:id/status", async (req, res) => {
       { new: true },
     );
 
-    // 🎯 If you approve the table, let the guest know!
     if (status === "confirmed") {
       const confirmedHtml = `
         <h2 style="color: #3D4828;">Table Confirmed!</h2>
         <p style="color: #6B705C;">Your sanctuary awaits on <strong>${reservation.date}</strong> at <strong>${reservation.time}</strong>.</p>
         <p style="color: #6B705C;">We look forward to hosting you.</p>
       `;
-      sendEmail(
+      await sendEmail(
         reservation.userEmail,
         "Your Table is Reserved | L'Olive",
         confirmedHtml,
       );
-    }
-    // 🎯 Optional: If you decline the table
-    else if (status === "declined") {
+    } else if (status === "declined") {
       const declinedHtml = `
         <h2 style="color: #3D4828;">Reservation Update</h2>
-        <p style="color: #6B705C;">We regret to inform you that we cannot accommodate your request for <strong>${reservation.date}</strong> at <strong>${reservation.time}</strong> as our sanctuary is at full capacity.</p>
+        <p style="color: #6B705C;">We regret to inform you that we cannot accommodate your request for <strong>${reservation.date}</strong> at <strong>${reservation.time}</strong>.</p>
         <p style="color: #6B705C;">Please feel free to try another date.</p>
       `;
-      sendEmail(
+      await sendEmail(
         reservation.userEmail,
         "Reservation Update | L'Olive",
         declinedHtml,
@@ -164,7 +166,7 @@ router.patch("/:id/status", async (req, res) => {
   }
 });
 
-// 4. ADMIN: GET ALL
+// --- 5. ADMIN: GET ALL ---
 router.get("/all", async (req, res) => {
   try {
     const all = await Reservation.find().sort({ createdAt: -1 });
@@ -174,7 +176,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-// 5. ADMIN: DELETE / PURGE
+// --- 6. ADMIN: DELETE / PURGE ---
 router.delete("/:id", async (req, res) => {
   try {
     const reservation = await Reservation.findById(req.params.id);
