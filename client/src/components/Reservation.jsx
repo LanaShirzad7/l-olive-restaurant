@@ -172,7 +172,7 @@ const Reservation = () => {
                   min="1"
                   value={formData.adults}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark"
+                  className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base"
                 />
               </div>
               <div className="border-b border-sand pb-2">
@@ -185,7 +185,7 @@ const Reservation = () => {
                   min="0"
                   value={formData.children}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark"
+                  className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base"
                 />
               </div>
             </div>
@@ -201,7 +201,8 @@ const Reservation = () => {
                   required
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm"
+                  // 🎯 CHANGED: Replaced font-sans text-sm with font-serif italic text-base
+                  className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base cursor-pointer"
                 />
               </div>
               <div className="border-b border-sand pb-2">
@@ -212,7 +213,8 @@ const Reservation = () => {
                   name="time"
                   value={formData.time}
                   onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm"
+                  // 🎯 CHANGED: Replaced font-sans text-sm with font-serif italic text-base
+                  className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base cursor-pointer"
                 >
                   {times.map((t) => (
                     <option key={t} value={t}>
@@ -231,12 +233,13 @@ const Reservation = () => {
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
-                className="w-full bg-transparent outline-none text-earth-dark font-sans text-sm"
+                // 🎯 CHANGED: Replaced font-sans text-sm with font-serif italic text-base
+                className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base cursor-pointer"
               >
-                <option value="Main Dining Room">{t("main_dining")}</option>
-                <option value="Terrace (Outdoor)">{t("terrace")}</option>
-                <option value="Chef's Table">{t("chef_table")}</option>
-                <option value="Private Vault">{t("vault")}</option>
+                <option value="Main Dining Room">{t("Main Dining")}</option>
+                <option value="Terrace (Outdoor)">{t("Terrace")}</option>
+                <option value="Chef's Table">{t("Chef's Table")}</option>
+                <option value="Private Vault">{t("Private Vault")}</option>
               </select>
             </div>
 
@@ -265,7 +268,7 @@ const Reservation = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-12 py-4 bg-earth-dark text-white uppercase tracking-[0.3em] text-[10px] font-bold hover:bg-earth-medium transition-all shadow-xl disabled:opacity-50"
+                className="px-12 py-4 bg-earth-dark text-white uppercase tracking-[0.3em] text-[10px] font-bold hover:bg-earth-medium transition-all shadow-xl disabled:opacity-50 cursor-pointer"
               >
                 {loading ? t("confirming") : t("btn_reserve")}
               </button>

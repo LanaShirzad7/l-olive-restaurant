@@ -8,14 +8,12 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 🎯 DYNAMIC URL: Uses Vercel environment variable or localhost for dev
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
   const fetchReservations = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/reservations/all`);
 
-      // 🛡️ JSON GUARD: Stops the "Unexpected token S" error if the server crashes
       const contentType = res.headers.get("content-type");
       if (
         !res.ok ||
@@ -39,7 +37,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // 🛡️ SECURITY & INITIAL FETCH
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
 
@@ -50,9 +47,7 @@ const AdminDashboard = () => {
     }
 
     const user = JSON.parse(storedUser);
-    console.log("Logged in user data:", user); // Check F12 Console to see if isAdmin is true!
 
-    // If the user isn't an admin, redirect them.
     if (!user.isAdmin) {
       console.warn("User is not an admin. Redirecting to Home.");
       navigate("/");
@@ -171,7 +166,8 @@ const AdminDashboard = () => {
                   key={res._id}
                   className="hover:bg-white/60 transition-colors group"
                 >
-                  <td className="p-6">
+                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
+                  <td className="p-6 align-middle">
                     <p className="font-bold text-earth-dark italic">
                       {res.userName || "Guest"}
                     </p>
@@ -179,23 +175,31 @@ const AdminDashboard = () => {
                       {res.userEmail}
                     </p>
                   </td>
-                  <td className="p-6">
+
+                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
+                  <td className="p-6 align-middle">
                     <p className="text-earth-dark font-sans font-bold text-sm">
                       {res.date}
                     </p>
                     <p className="text-xs text-gray-400 italic">{res.time}</p>
                   </td>
-                  <td className="p-6">
-                    <span className="text-[10px] uppercase font-bold text-earth-medium bg-sand/30 px-2 py-1">
-                      {res.area}
-                    </span>
-                    <p className="text-sm font-sans font-bold text-earth-dark mt-2">
+
+                  {/* 🎯 ALIGNMENT FIX: Added align-middle and fixed the empty area box bug */}
+                  <td className="p-6 align-middle">
+                    {res.area && (
+                      <span className="text-[10px] uppercase font-bold text-earth-medium bg-sand/30 px-2 py-1 inline-block mb-1">
+                        {res.area}
+                      </span>
+                    )}
+                    <p className="text-sm font-sans font-bold text-earth-dark">
                       {res.guests} Guests
                     </p>
                   </td>
-                  <td className="p-6">
+
+                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
+                  <td className="p-6 align-middle">
                     <span
-                      className={`px-3 py-1 text-[9px] font-bold uppercase rounded-full ${
+                      className={`px-3 py-1 text-[9px] font-bold uppercase rounded-full inline-block ${
                         res.status === "confirmed"
                           ? "bg-green-100 text-green-800"
                           : res.status === "declined"
@@ -206,7 +210,9 @@ const AdminDashboard = () => {
                       {res.status || "Pending"}
                     </span>
                   </td>
-                  <td className="p-6 text-right print:hidden">
+
+                  {/* 🎯 ALIGNMENT FIX: Added align-middle */}
+                  <td className="p-6 text-right align-middle print:hidden">
                     <div className="flex justify-end items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => updateStatus(res._id, "confirmed")}
