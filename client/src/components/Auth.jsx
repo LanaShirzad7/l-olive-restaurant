@@ -48,16 +48,14 @@ const Auth = ({ setIsLoggedIn }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(false);
   const [isEnteringSanctuary, setIsEnteringSanctuary] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 🎯 ADDED: Loading state
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  // 🎯 FIXED: Pointing to your brand-new "mhla" server!
-  const API_BASE_URL = "https://l-olive-restaurant-mhla.vercel.app";
-
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
   const [activeWisdom, setActiveWisdom] = useState(null);
 
-  // 🎯 Wisdom pool mapped to translation keys
   const wisdomPool = [
     {
       tKey: "quote_1",
@@ -119,6 +117,7 @@ const Auth = ({ setIsLoggedIn }) => {
     e.preventDefault();
     setError("");
     setMessage("");
+    setIsLoading(true); // 🎯 ADDED: Turn on loading when clicked
 
     const url = isLogin
       ? `${API_BASE_URL}/api/auth/login`
@@ -154,6 +153,8 @@ const Auth = ({ setIsLoggedIn }) => {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false); // 🎯 ADDED: Turn off loading when done
     }
   };
 
@@ -263,6 +264,7 @@ const Auth = ({ setIsLoggedIn }) => {
                     id="name"
                     type="text"
                     required
+                    value={formData.name} // 🎯 ADDED: Controlled input
                     onChange={handleChange}
                     className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark italic border-none"
                     placeholder="Lana Del Rey"
@@ -279,6 +281,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   type="email"
                   autoComplete="username"
                   required
+                  value={formData.email} // 🎯 ADDED: Controlled input
                   onChange={handleChange}
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark italic border-none"
                   placeholder="nature@lolive.com"
@@ -294,6 +297,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   type="password"
                   autoComplete="current-password"
                   required
+                  value={formData.password} // 🎯 ADDED: Controlled input
                   onChange={handleChange}
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark border-none"
                   placeholder="••••••••"
@@ -323,11 +327,21 @@ const Auth = ({ setIsLoggedIn }) => {
                 </div>
               )}
 
+              {/* 🎯 ADDED: Loading state disables the button and changes text */}
               <button
                 type="submit"
-                className="w-full py-5 bg-earth-dark text-cream hover:bg-[#2d361e] transition-all uppercase tracking-[0.3em] text-[10px] font-sans font-bold shadow-xl border-none"
+                disabled={isLoading}
+                className={`w-full py-5 bg-earth-dark text-cream transition-all uppercase tracking-[0.3em] text-[10px] font-sans font-bold shadow-xl border-none ${
+                  isLoading
+                    ? "opacity-70 cursor-wait"
+                    : "hover:bg-[#2d361e] cursor-pointer"
+                }`}
               >
-                {isLogin ? t("sign_in") : t("register_claim")}
+                {isLoading
+                  ? "Verifying..."
+                  : isLogin
+                    ? t("sign_in")
+                    : t("register_claim")}
               </button>
             </form>
 
@@ -338,6 +352,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   setIsLogin(!isLogin);
                   setError("");
                   setMessage("");
+                  setFormData({ name: "", email: "", password: "" }); // 🎯 ADDED: Clears form when switching
                 }}
                 className="text-earth-medium hover:text-earth-dark text-[10px] uppercase tracking-[0.2em] font-bold transition-all bg-transparent border-none cursor-pointer"
               >

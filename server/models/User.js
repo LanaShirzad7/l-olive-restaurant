@@ -15,7 +15,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // THESE MUST BE OUTSIDE THE NAME OBJECT
+  // 🎯 ADDED: This tells the database to remember who is an Admin!
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
   resetPasswordToken: {
     type: String,
   },

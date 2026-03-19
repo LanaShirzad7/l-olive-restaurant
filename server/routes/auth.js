@@ -34,13 +34,14 @@ router.post("/register", async (req, res) => {
         name: user.name,
         email: user.email,
         points: user.points,
-        isAdmin: user.isAdmin, // 🎯 ADDED: Sends admin status to frontend
+        isAdmin: user.isAdmin,
       },
       msg: "Registration successful! Redirecting...",
     });
   } catch (err) {
     console.error("Signup Error:", err.message);
-    res.status(500).send("Server Error during registration");
+    // 🎯 FIXED: Sending JSON instead of plain text
+    res.status(500).json({ msg: "Server Error during registration" });
   }
 });
 
@@ -68,12 +69,13 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         points: user.points,
-        isAdmin: user.isAdmin, // 🎯 ADDED: This lets the AdminDashboard stay open!
+        isAdmin: user.isAdmin,
       },
     });
   } catch (err) {
     console.error("Login Error:", err.message);
-    res.status(500).send("Server Error during login");
+    // 🎯 FIXED: Sending JSON instead of plain text
+    res.status(500).json({ msg: "Server Error during login" });
   }
 });
 
@@ -100,7 +102,6 @@ router.post("/forgot-password", async (req, res) => {
       },
     });
 
-    // 🎯 FIXED: Uses a dynamic URL so it works on lolive.today AND localhost
     const frontendBaseUrl =
       process.env.NODE_ENV === "production"
         ? "https://lolive.today"
