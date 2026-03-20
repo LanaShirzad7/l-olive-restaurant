@@ -49,7 +49,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* 2. VISIT US & QR CODE */}
+        {/* 2. VISIT US */}
         <div className="space-y-6">
           <h4 className="uppercase tracking-[0.3em] text-[10px] font-black text-[#F5F5DC]/90">
             {t("contact_us")}
@@ -66,18 +66,6 @@ const Footer = () => {
               Yerevan, Armenia
             </p>
           </a>
-
-          {/* 🎯 THE QR CODE INTEGRATION */}
-          <div className="pt-4 flex flex-col items-start gap-3">
-            <img
-              src="/qr-code.png"
-              alt="Scan Menu"
-              className="w-24 h-24 border border-[#F5F5DC]/20 p-2 bg-white/5 shadow-inner hover:border-[#F5F5DC]/50 transition-all rounded-sm"
-            />
-            <p className="text-[9px] uppercase tracking-[0.2em] text-[#F5F5DC]/40 font-bold">
-              {t("scan_explore")}
-            </p>
-          </div>
         </div>
 
         {/* 3. JOURNEY (Socials) */}
