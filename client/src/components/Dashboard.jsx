@@ -1,27 +1,36 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   // 🎯 Production-ready API URL
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser
-      ? JSON.parse(savedUser)
-      : {
-          name: "Guest",
-          email: "",
-          profilePic: "",
-          points: 0,
-          walletBalance: 0,
-        };
+    try {
+      const savedUser = localStorage.getItem("user");
+      return savedUser
+        ? JSON.parse(savedUser)
+        : {
+            name: "Guest",
+            email: "",
+            profilePic: "",
+            points: 0,
+            walletBalance: 0,
+          };
+    } catch {
+      return { name: "Guest", email: "", points: 0, walletBalance: 0 };
+    }
   });
-
+  useEffect(() => {
+    if (user?.email === "lana.shirzad@gmail.com") {
+      navigate("/admin");
+    }
+  }, [user.email, navigate]);
   const [reservations, setReservations] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(user.name);
@@ -32,9 +41,9 @@ const Dashboard = () => {
     setNewName(user.name || "");
   }, [user.name]);
 
-  // 🎯 NEW: Handle Redeeming Points to Wallet Cash
+  // 🎯 REDEEM POINTS LOGIC
   const handleRedeem = async () => {
-    if (user.points < 100) {
+    if ((user.points || 0) < 100) {
       alert(
         t("minimum_points_required") ||
           "Minimum 100 points required to redeem.",
@@ -57,7 +66,6 @@ const Dashboard = () => {
       const data = await res.json();
 
       if (res.ok) {
-        // Update local state and storage
         const updatedUser = {
           ...user,
           points: data.points,
@@ -65,13 +73,17 @@ const Dashboard = () => {
         };
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setUser(updatedUser);
-        window.dispatchEvent(new Event("storage")); // Sync Navbar
-        alert(t("redeem_success") || "Points converted to Wallet Balance!");
+        window.dispatchEvent(new Event("storage")); // Instantly updates the Navbar
+        alert(
+          t("redeem_success") ||
+            "Points successfully converted to Wallet Balance!",
+        );
       } else {
-        alert(data.msg || "Redemption failed");
+        alert(data.msg || "Redemption failed.");
       }
     } catch (err) {
       console.error("Redeem Error:", err);
+      alert("Network error. Could not connect to the sanctuary server.");
     } finally {
       setLoading(false);
     }
@@ -151,7 +163,9 @@ const Dashboard = () => {
   };
 
   const handleCancelReservation = async (id, date) => {
-    const confirmed = window.confirm(t("release_confirm"));
+    const confirmed = window.confirm(
+      t("release_confirm") || "Release this reservation back to the community?",
+    );
     if (!confirmed) return;
 
     try {
@@ -167,8 +181,10 @@ const Dashboard = () => {
           localStorage.getItem("notifications") || "[]",
         );
         const newNote = {
-          title: t("res_cancelled"),
-          message: t("res_released_msg", { date }),
+          title: t("res_cancelled") || "Reservation Released",
+          message:
+            t("res_released_msg", { date }) ||
+            `Your table for ${date} has been opened.`,
           date: new Date().toLocaleString(),
         };
         localStorage.setItem(
@@ -200,7 +216,7 @@ const Dashboard = () => {
   return (
     <div className="bg-cream min-h-screen pt-24 md:pt-40 pb-20 px-4 md:px-6 font-serif overflow-x-hidden">
       <div className="max-w-5xl mx-auto">
-        {/* HEADER SECTION - FIXED FOR MOBILE */}
+        {/* HEADER SECTION */}
         <header className="mb-12 flex flex-col md:flex-row items-center gap-6 md:gap-8 border-b border-sand pb-10 md:pb-12">
           <div className="relative group">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-sand shadow-xl bg-white flex items-center justify-center">
@@ -233,7 +249,7 @@ const Dashboard = () => {
 
           <div className="flex-1 text-center md:text-left">
             <p className="text-[10px] text-earth-medium uppercase tracking-[0.4em] font-sans font-bold mb-2">
-              {t("member_sanctuary")}
+              {t("member_sanctuary") || "SANCTUARY MEMBER"}
             </p>
 
             {isEditing ? (
@@ -245,19 +261,19 @@ const Dashboard = () => {
                   className="bg-transparent border-b-2 border-earth-dark text-3xl md:text-4xl italic outline-none text-earth-dark w-full max-w-md font-serif"
                   autoFocus
                 />
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center md:justify-start">
                   <button
                     onClick={handleUpdateName}
                     disabled={loading}
                     className="bg-earth-dark text-cream px-6 py-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer border-none shadow-lg"
                   >
-                    {loading ? "..." : t("save")}
+                    {loading ? "..." : t("save") || "SAVE"}
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
                     className="bg-transparent border border-sand text-earth-medium px-4 py-2 text-[10px] uppercase font-bold cursor-pointer"
                   >
-                    {t("cancel")}
+                    {t("cancel") || "CANCEL"}
                   </button>
                 </div>
               </div>
@@ -280,26 +296,29 @@ const Dashboard = () => {
           </div>
         </header>
 
-        {/* 🎯 WALLET & POINTS SECTION - NEW COMPACT LAYOUT */}
+        {/* 🎯 WALLET & POINTS SECTION */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {/* Harvest Points Card */}
           <section className="p-8 md:p-10 bg-earth-dark text-cream flex flex-col justify-between shadow-2xl relative overflow-hidden rounded-sm">
             <div className="relative z-10">
               <h3 className="uppercase tracking-[0.4em] text-[10px] font-bold text-cream/40 mb-4">
-                {t("harvest_points")}
+                {t("harvest_points") || "HARVEST POINTS"}
               </h3>
+              {/* FIXED: Added fallback (user.points || 0) */}
               <p className="text-5xl md:text-6xl font-sans font-light tracking-tighter">
-                {user.points?.toLocaleString() || 0}
+                {(user.points || 0).toLocaleString()}
               </p>
             </div>
             <button
               onClick={handleRedeem}
-              disabled={loading || user.points < 100}
-              className="relative z-10 mt-8 px-8 py-4 bg-cream text-earth-dark text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-sand transition-all border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || (user.points || 0) < 100}
+              className="relative z-10 mt-8 px-8 py-4 bg-cream text-earth-dark text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-sand transition-all border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
             >
-              {loading ? "..." : t("redeem_to_wallet")}
+              {loading
+                ? "PROCESSING..."
+                : t("redeem_to_wallet") || "REDEEM TO WALLET"}
             </button>
-            <i className="fas fa-leaf absolute right-[-20px] bottom-[-20px] text-9xl opacity-5 rotate-12"></i>
+            <i className="fas fa-leaf absolute right-[-20px] bottom-[-20px] text-9xl opacity-5 rotate-12 pointer-events-none"></i>
           </section>
 
           {/* Digital Wallet Card */}
@@ -308,8 +327,9 @@ const Dashboard = () => {
               <h3 className="uppercase tracking-[0.4em] text-[10px] font-bold text-earth-medium mb-4">
                 {t("digital_wallet") || "DIGITAL WALLET"}
               </h3>
+              {/* FIXED: Added fallback (user.walletBalance || 0) */}
               <p className="text-5xl md:text-6xl font-sans font-light tracking-tighter text-earth-dark">
-                ${user.walletBalance?.toFixed(2) || "0.00"}
+                ${(user.walletBalance || 0).toFixed(2)}
               </p>
               <p className="mt-4 text-[10px] text-gray-400 italic tracking-wide">
                 {t("3_cashback_note") ||
@@ -325,14 +345,14 @@ const Dashboard = () => {
           </section>
         </div>
 
-        {/* RESERVATIONS SECTION - RESPONSIVE CARDS */}
+        {/* RESERVATIONS SECTION */}
         <section className="mb-20">
           <div className="flex justify-between items-end mb-8 border-b border-sand pb-4">
             <h2 className="text-2xl md:text-3xl text-earth-dark italic">
-              {t("res_history")}
+              {t("res_history") || "Reservation History"}
             </h2>
             <span className="text-[10px] uppercase tracking-widest text-earth-medium font-sans font-bold">
-              {t("archive")}
+              {t("archive") || "ARCHIVE"}
             </span>
           </div>
 
@@ -350,12 +370,15 @@ const Dashboard = () => {
             </div>
           ) : reservations.length === 0 ? (
             <div className="py-20 bg-white/30 border border-dashed border-sand text-center">
-              <p className="text-gray-400 italic mb-6">{t("no_res_msg")}</p>
+              <p className="text-gray-400 italic mb-6">
+                {t("no_res_msg") ||
+                  "Your sanctuary records are currently empty."}
+              </p>
               <Link
                 to="/reservation"
-                className="inline-block px-8 py-3 bg-earth-dark text-cream text-[10px] uppercase font-bold tracking-[0.2em] no-underline"
+                className="inline-block px-8 py-3 bg-earth-dark text-cream text-[10px] uppercase font-bold tracking-[0.2em] no-underline transition-colors hover:bg-earth-medium"
               >
-                {t("book_first_table")}
+                {t("book_first_table") || "BOOK YOUR FIRST TABLE"}
               </Link>
             </div>
           ) : (
@@ -363,7 +386,7 @@ const Dashboard = () => {
               {reservations.map((res) => (
                 <div
                   key={res._id}
-                  className="bg-white/60 backdrop-blur-sm p-6 md:p-8 border border-sand flex flex-col md:flex-row justify-between items-center gap-6 group transition-all shadow-sm"
+                  className="bg-white/60 backdrop-blur-sm p-6 md:p-8 border border-sand flex flex-col md:flex-row justify-between items-center gap-6 group transition-all shadow-sm hover:shadow-md hover:bg-white"
                 >
                   <div className="flex items-center gap-6 md:gap-8 w-full md:w-auto">
                     <div className="text-center border-r border-sand pr-6 md:pr-8 min-w-[70px] md:min-w-[100px]">
@@ -414,7 +437,7 @@ const Dashboard = () => {
                         }
                         className="text-[10px] uppercase tracking-widest font-bold text-red-800/40 hover:text-red-800 bg-transparent border-none cursor-pointer transition-colors"
                       >
-                        {t("cancel")}
+                        {t("cancel") || "CANCEL"}
                       </button>
                     )}
                   </div>

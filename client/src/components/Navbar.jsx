@@ -159,35 +159,49 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </Link>
             ) : (
               <div className="flex items-center border-l border-earth-dark/20 pl-8 gap-6">
-                {/* WALLET */}
-                <div className="flex flex-col items-end">
-                  <span className="text-[7px] text-earth-medium opacity-60 tracking-[0.2em] uppercase font-sans">
-                    {t("wallet") || "Wallet"}
-                  </span>
-                  <span className="text-earth-dark font-sans font-bold text-[12px] mt-[-2px]">
-                    ${user?.walletBalance?.toFixed(2) || "0.00"}
-                  </span>
-                </div>
+                {/* 🎯 REGULAR USERS ONLY: Wallet and Profile */}
+                {!isAdmin && (
+                  <>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[7px] text-earth-medium opacity-60 tracking-[0.2em] uppercase font-sans">
+                        {t("wallet") || "Wallet"}
+                      </span>
+                      <span className="text-earth-dark font-sans font-bold text-[12px] mt-[-2px]">
+                        ${user?.walletBalance?.toFixed(2) || "0.00"}
+                      </span>
+                    </div>
 
-                {/* PROFILE ICON */}
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-3 group no-underline"
-                >
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-earth-dark/20 transition-transform group-hover:scale-110">
-                    {user?.profilePic ? (
-                      <img
-                        src={user.profilePic}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-sand/50 flex items-center justify-center text-[10px] font-sans font-bold text-earth-dark uppercase">
-                        {user?.name?.charAt(0) || "U"}
+                    <Link
+                      to="/dashboard"
+                      className="flex items-center gap-3 group no-underline"
+                    >
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-earth-dark/20 transition-transform group-hover:scale-110">
+                        {user?.profilePic ? (
+                          <img
+                            src={user.profilePic}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-sand/50 flex items-center justify-center text-[10px] font-sans font-bold text-earth-dark uppercase">
+                            {user?.name?.charAt(0) || "U"}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </Link>
+                    </Link>
+                  </>
+                )}
+
+                {/* 🎯 ADMIN ONLY: Admin Panel Link */}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="text-red-800 hover:text-red-600 font-bold no-underline flex items-center gap-2"
+                  >
+                    <i className="fas fa-lock text-xs"></i>{" "}
+                    {t("admin_panel") || "ADMIN PANEL"}
+                  </Link>
+                )}
 
                 {/* 🎯 DESKTOP LOGOUT BUTTON */}
                 <button
@@ -198,15 +212,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                   {t("logout") || "Sign Out"}
                 </button>
               </div>
-            )}
-
-            {isLoggedIn && isAdmin && (
-              <Link
-                to="/admin"
-                className="text-red-800 hover:text-red-600 font-bold no-underline border-l border-earth-dark/20 pl-8 flex items-center gap-2"
-              >
-                <i className="fas fa-lock text-xs"></i> {t("admin_panel")}
-              </Link>
             )}
           </div>
 
@@ -322,15 +327,37 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           className={`md:hidden absolute top-full left-0 w-full bg-[#FDFCF0] transition-all duration-300 overflow-hidden shadow-lg ${isMobileMenuOpen ? "max-h-screen opacity-100 py-10" : "max-h-0 opacity-0"}`}
         >
           <div className="flex flex-col items-center space-y-8 uppercase tracking-[0.2em] text-xs font-sans font-bold text-earth-dark">
-            {isLoggedIn && (
-              <div className="flex flex-col items-center bg-sand/20 px-10 py-4 rounded-sm">
-                <span className="text-[8px] opacity-50 mb-1 tracking-widest">
-                  {t("wallet_balance") || "WALLET BALANCE"}
-                </span>
-                <span className="text-xl italic">
-                  ${user?.walletBalance?.toFixed(2) || "0.00"}
-                </span>
-              </div>
+            {/* 🎯 REGULAR USERS ONLY: Mobile Wallet */}
+            {isLoggedIn && !isAdmin && (
+              <>
+                <div className="flex flex-col items-center bg-sand/20 px-10 py-4 rounded-sm">
+                  <span className="text-[8px] opacity-50 mb-1 tracking-widest">
+                    {t("wallet_balance") || "WALLET BALANCE"}
+                  </span>
+                  <span className="text-xl italic">
+                    ${user?.walletBalance?.toFixed(2) || "0.00"}
+                  </span>
+                </div>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-2 no-underline text-earth-dark"
+                >
+                  <i className="fas fa-user-circle"></i> {t("dashboard")}
+                </Link>
+              </>
+            )}
+
+            {/* 🎯 ADMIN ONLY: Mobile Admin Panel Link */}
+            {isLoggedIn && isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-red-800 flex items-center gap-2 no-underline font-bold"
+              >
+                <i className="fas fa-lock"></i>{" "}
+                {t("admin_panel") || "ADMIN PANEL"}
+              </Link>
             )}
 
             <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
@@ -342,16 +369,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             <Link to="/reservation" onClick={() => setIsMobileMenuOpen(false)}>
               {t("book_table")}
             </Link>
-
-            {isLoggedIn && (
-              <Link
-                to="/dashboard"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 no-underline text-earth-dark"
-              >
-                <i className="fas fa-user-circle"></i> {t("dashboard")}
-              </Link>
-            )}
 
             <div className="pt-4 w-full px-10 text-center">
               {!isLoggedIn ? (
