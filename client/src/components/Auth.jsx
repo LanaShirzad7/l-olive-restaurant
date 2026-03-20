@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-// --- 1. THE SANCTUARY ACCESS ANIMATION COMPONENT ---
 const SanctuaryAccess = () => {
   const { t } = useTranslation();
   return (
@@ -10,12 +9,10 @@ const SanctuaryAccess = () => {
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
         <span className="text-[50vh] opacity-5 italic select-none">O</span>
       </div>
-
       <div className="relative z-10 text-center space-y-8 animate-in fade-in zoom-in duration-1000">
         <div className="flex justify-center">
           <i className="fas fa-leaf text-4xl animate-pulse text-earth-medium"></i>
         </div>
-
         <div className="space-y-2">
           <h2 className="text-4xl italic tracking-wide">
             {t("prep_sanctuary")}
@@ -24,12 +21,10 @@ const SanctuaryAccess = () => {
             {t("setting_table")}
           </p>
         </div>
-
         <div className="w-48 h-[1px] bg-white/10 mx-auto relative overflow-hidden">
           <div className="absolute inset-0 bg-earth-medium animate-loading-line"></div>
         </div>
       </div>
-
       <style>{`
         @keyframes loading-line {
           0% { transform: translateX(-100%); }
@@ -43,7 +38,6 @@ const SanctuaryAccess = () => {
   );
 };
 
-// --- 2. THE MAIN AUTH COMPONENT ---
 const Auth = ({ setIsLoggedIn }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(false);
@@ -57,16 +51,8 @@ const Auth = ({ setIsLoggedIn }) => {
   const [activeWisdom, setActiveWisdom] = useState(null);
 
   const wisdomPool = [
-    {
-      tKey: "quote_1",
-      tips: ["tip_1_1", "tip_1_2"],
-      color: "#3D4828",
-    },
-    {
-      tKey: "quote_2",
-      tips: ["tip_2_1", "tip_2_2"],
-      color: "#4A5732",
-    },
+    { tKey: "quote_1", tips: ["tip_1_1", "tip_1_2"], color: "#3D4828" },
+    { tKey: "quote_2", tips: ["tip_2_1", "tip_2_2"], color: "#4A5732" },
   ];
 
   const shuffleWisdom = () => {
@@ -93,7 +79,6 @@ const Auth = ({ setIsLoggedIn }) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  // 🎯 SECURITY: Strict Password Checker
   const validatePassword = (password) => {
     const minLength = password.length >= 8;
     const hasUpper = /[A-Z]/.test(password);
@@ -110,7 +95,7 @@ const Auth = ({ setIsLoggedIn }) => {
     if (!hasSpecial)
       return "Password must contain at least one special character (e.g., !@#$%).";
 
-    return null; // Password is secure
+    return null;
   };
 
   const handleForgotPassword = async () => {
@@ -138,12 +123,11 @@ const Auth = ({ setIsLoggedIn }) => {
     setError("");
     setMessage("");
 
-    // 🎯 SECURITY CHECK: Only validate strong passwords during Sign Up
     if (!isLogin) {
       const passwordError = validatePassword(formData.password);
       if (passwordError) {
         setError(passwordError);
-        return; // Stop the form submission
+        return;
       }
     }
 
@@ -171,8 +155,10 @@ const Auth = ({ setIsLoggedIn }) => {
       if (!response.ok) throw new Error(data.msg || "Authentication failed");
 
       if (data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // 🎯 SECURE: Saved directly to temporary sessionStorage
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+
         setIsEnteringSanctuary(true);
 
         setTimeout(() => {
@@ -196,7 +182,6 @@ const Auth = ({ setIsLoggedIn }) => {
         className={`bg-cream min-h-screen flex items-center justify-center pt-24 pb-12 px-6 font-serif transition-opacity duration-1000 ${isEnteringSanctuary ? "opacity-0" : "opacity-100"}`}
       >
         <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white/40 backdrop-blur-md border border-sand shadow-2xl overflow-hidden min-h-[680px]">
-          {/* LEFT SIDE: WISDOM & PROMO */}
           <div
             className="p-12 lg:p-16 text-cream flex flex-col justify-center relative transition-colors duration-1000 ease-in-out"
             style={{
@@ -273,7 +258,6 @@ const Auth = ({ setIsLoggedIn }) => {
             </div>
           </div>
 
-          {/* RIGHT SIDE: FORM */}
           <div className="p-10 md:p-16 bg-transparent flex flex-col justify-center">
             <div className="mb-12 text-center lg:text-left">
               <h3 className="text-3xl text-earth-dark italic mb-2">
@@ -332,7 +316,6 @@ const Auth = ({ setIsLoggedIn }) => {
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark border-none"
                   placeholder="••••••••"
                 />
-                {/* 🎯 SECURITY: Helper text for new users */}
                 {!isLogin && (
                   <p className="text-[9px] text-gray-400 mt-2 font-sans tracking-wide">
                     Must be 8+ chars with uppercase, lowercase, number, &

@@ -30,7 +30,8 @@ const ScrollToTop = () => {
 
 // --- PROTECTED ADMIN ROUTE ---
 const AdminRoute = ({ children }) => {
-  const storedUserString = localStorage.getItem("user");
+  // 🎯 SECURE: Check session storage
+  const storedUserString = sessionStorage.getItem("user");
   let isAdmin = false;
   let needsRelogin = false;
 
@@ -52,16 +53,15 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
-  // 🎯 PERSISTENCE: Initialize state directly from the browser's memory
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-
-  // 🎯 FEATURE 5: THE "GOLDEN HOUR" THEME STATE
+  // 🎯 SECURE: Initialize state directly from the secure session memory
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!sessionStorage.getItem("token"),
+  );
   const [isEvening, setIsEvening] = useState(false);
 
-  // 🎯 SYNC: Listen for changes in localStorage (e.g., if user logs out in another tab)
   useEffect(() => {
     const syncAuth = () => {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token"); // 🎯 SECURE
       setIsLoggedIn(!!token);
     };
 
@@ -69,16 +69,14 @@ function App() {
     return () => window.removeEventListener("storage", syncAuth);
   }, []);
 
-  // 🎯 DYNAMIC TIME CHECKER FOR THE THEME
   useEffect(() => {
     const checkTime = () => {
       const currentHour = new Date().getHours();
-      // Activates the dark theme between 7 PM (19:00) and 6:59 AM
       setIsEvening(currentHour >= 19 || currentHour < 7);
     };
 
-    checkTime(); // Check immediately on load
-    const interval = setInterval(checkTime, 60000); // Re-check every minute
+    checkTime();
+    const interval = setInterval(checkTime, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -90,12 +88,11 @@ function App() {
     <CartProvider>
       <Router>
         <ScrollToTop />
-        {/* 🎯 UPDATED WRAPPER: Smooth transition between Day and Night themes */}
         <div
           className={`flex flex-col min-h-screen font-sans transition-colors duration-1000 ease-in-out ${
             isEvening
-              ? "bg-[#1C2517] text-[#FDFCF0]" // Midnight Olive (Night)
-              : "bg-[#FDFCF0] text-[#283618]" // Cream & Sage (Day)
+              ? "bg-[#1C2517] text-[#FDFCF0]"
+              : "bg-[#FDFCF0] text-[#283618]"
           }`}
         >
           <Navbar

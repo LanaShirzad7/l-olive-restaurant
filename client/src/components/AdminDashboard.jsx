@@ -8,12 +8,12 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 🎯 Ensure this port matches your backend terminal!
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
   const fetchReservations = async () => {
     try {
-      const token = localStorage.getItem("token");
+      // 🎯 SECURE: Using sessionStorage
+      const token = sessionStorage.getItem("token");
 
       const res = await fetch(`${API_BASE_URL}/api/reservations/all`, {
         headers: {
@@ -52,8 +52,9 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    // 🎯 SECURE: Using sessionStorage
+    const storedUser = sessionStorage.getItem("user");
+    const token = sessionStorage.getItem("token");
 
     if (!storedUser || !token) {
       navigate("/auth");
@@ -62,17 +63,16 @@ const AdminDashboard = () => {
 
     const user = JSON.parse(storedUser);
 
-    // 🎯 FIXED: Now uses your specific email to verify Admin status
     if (user.email !== "lana.shirzad@gmail.com") {
-      navigate("/"); // Kick regular users out to the home page
+      navigate("/");
     } else {
-      fetchReservations(); // Let the admin in
+      fetchReservations();
     }
   }, [navigate]);
 
   const updateStatus = async (id, status) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       const res = await fetch(`${API_BASE_URL}/api/reservations/${id}/status`, {
         method: "PATCH",
         headers: {
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
     if (!window.confirm(`Purge reservation for ${date}?`)) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       const res = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
         method: "DELETE",
         headers: {
@@ -127,7 +127,6 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-gradient-to-b from-[#71824F]/20 to-[#FDFCF0]">
       <div className="max-w-7xl mx-auto">
-        {/* ERROR DISPLAY */}
         {error && (
           <div className="mb-6 p-6 bg-white border-l-4 border-red-600 shadow-md text-red-800 rounded-sm flex items-center gap-4">
             <i className="fas fa-exclamation-triangle"></i>
@@ -140,7 +139,6 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* HEADER */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-sand pb-8">
           <div>
             <p className="text-[10px] uppercase tracking-[0.4em] text-earth-medium mb-2 font-sans font-bold">
@@ -177,7 +175,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* TABLE WRAPPER - SCROLLABLE FOR MOBILE */}
         <div className="bg-white/40 backdrop-blur-md border border-sand shadow-xl rounded-sm overflow-x-auto">
           <table className="w-full min-w-[900px] text-left border-collapse">
             <thead>
@@ -231,7 +228,6 @@ const AdminDashboard = () => {
                     </span>
                   </td>
                   <td className="p-6 text-right align-middle print:hidden">
-                    {/* 🎯 FIXED: Buttons are always visible on mobile, hide-until-hover on desktop */}
                     <div className="flex justify-end items-center gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => updateStatus(res._id, "confirmed")}

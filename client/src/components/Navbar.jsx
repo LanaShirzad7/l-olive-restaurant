@@ -21,10 +21,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
-  // 🎯 USER STATE
+  // 🎯 USER STATE (Now strictly using sessionStorage)
   const [user, setUser] = useState(() => {
     try {
-      const savedUser = localStorage.getItem("user");
+      const savedUser = sessionStorage.getItem("user");
       return savedUser ? JSON.parse(savedUser) : null;
     } catch {
       return null;
@@ -54,7 +54,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         return;
       }
       try {
-        const savedUser = localStorage.getItem("user");
+        const savedUser = sessionStorage.getItem("user"); // 🎯 SECURE
         const storedNotes = localStorage.getItem("notifications");
 
         if (savedUser) setUser(JSON.parse(savedUser));
@@ -83,7 +83,8 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear(); // 🎯 SECURE: Wipes session memory
+    localStorage.clear(); // Clears remaining local data like cart/notes
     if (setIsLoggedIn) setIsLoggedIn(false);
     setUser(null);
     setIsMobileMenuOpen(false);
@@ -110,7 +111,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         }`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* LOGO */}
           <Link
             to="/"
             className="no-underline z-50"
@@ -129,7 +129,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             </div>
           </Link>
 
-          {/* DESKTOP LINKS */}
           <div className="hidden md:flex items-center space-x-8 uppercase tracking-[0.15em] text-[11px] font-sans font-semibold">
             <Link
               to="/about"
@@ -159,7 +158,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </Link>
             ) : (
               <div className="flex items-center border-l border-earth-dark/20 pl-8 gap-6">
-                {/* 🎯 REGULAR USERS ONLY: Wallet and Profile */}
                 {!isAdmin && (
                   <>
                     <div className="flex flex-col items-end">
@@ -192,7 +190,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                   </>
                 )}
 
-                {/* 🎯 ADMIN ONLY: Admin Panel Link */}
                 {isAdmin && (
                   <Link
                     to="/admin"
@@ -203,7 +200,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                   </Link>
                 )}
 
-                {/* 🎯 DESKTOP LOGOUT BUTTON */}
                 <button
                   onClick={handleLogout}
                   className="bg-transparent border-none text-red-800/60 hover:text-red-800 cursor-pointer text-[10px] uppercase font-bold tracking-widest transition-colors ml-2"
@@ -216,7 +212,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
 
           <div className="flex items-center space-x-5 md:space-x-6 z-50">
-            {/* LANGUAGE TOGGLE */}
             <div className="hidden md:flex items-center space-x-2 text-[9px] font-sans font-bold text-earth-dark/50 tracking-widest">
               <button
                 onClick={() => changeLanguage("en")}
@@ -240,7 +235,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </button>
             </div>
 
-            {/* NOTIFICATION BELL */}
             {isLoggedIn && (
               <div className="relative">
                 <button
@@ -297,7 +291,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </div>
             )}
 
-            {/* CART */}
             <button
               onClick={() => setIsCartOpen(true)}
               className="relative text-earth-dark bg-transparent cursor-pointer flex items-center transition-transform hover:scale-110 border-none"
@@ -310,7 +303,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               )}
             </button>
 
-            {/* MOBILE TOGGLE */}
             <button
               className="md:hidden text-earth-dark text-xl bg-transparent cursor-pointer border-none ml-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -322,12 +314,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
         </div>
 
-        {/* MOBILE MENU */}
         <div
           className={`md:hidden absolute top-full left-0 w-full bg-[#FDFCF0] transition-all duration-300 overflow-hidden shadow-lg ${isMobileMenuOpen ? "max-h-screen opacity-100 py-10" : "max-h-0 opacity-0"}`}
         >
           <div className="flex flex-col items-center space-y-8 uppercase tracking-[0.2em] text-xs font-sans font-bold text-earth-dark">
-            {/* 🎯 REGULAR USERS ONLY: Mobile Wallet */}
             {isLoggedIn && !isAdmin && (
               <>
                 <div className="flex flex-col items-center bg-sand/20 px-10 py-4 rounded-sm">
@@ -348,7 +338,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </>
             )}
 
-            {/* 🎯 ADMIN ONLY: Mobile Admin Panel Link */}
             {isLoggedIn && isAdmin && (
               <Link
                 to="/admin"
@@ -392,7 +381,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         </div>
       </nav>
 
-      {/* --- CART DRAWER --- */}
       {isCartOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div

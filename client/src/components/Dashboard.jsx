@@ -7,12 +7,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // 🎯 Production-ready API URL
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
+  // 🎯 SECURE: Fetch initial state from session storage
   const [user, setUser] = useState(() => {
     try {
-      const savedUser = localStorage.getItem("user");
+      const savedUser = sessionStorage.getItem("user");
       return savedUser
         ? JSON.parse(savedUser)
         : {
@@ -26,11 +26,13 @@ const Dashboard = () => {
       return { name: "Guest", email: "", points: 0, walletBalance: 0 };
     }
   });
+
   useEffect(() => {
     if (user?.email === "lana.shirzad@gmail.com") {
       navigate("/admin");
     }
   }, [user.email, navigate]);
+
   const [reservations, setReservations] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(user.name);
@@ -41,7 +43,6 @@ const Dashboard = () => {
     setNewName(user.name || "");
   }, [user.name]);
 
-  // 🎯 REDEEM POINTS LOGIC
   const handleRedeem = async () => {
     if ((user.points || 0) < 100) {
       alert(
@@ -53,7 +54,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token"); // 🎯 SECURE
       const res = await fetch(`${API_BASE_URL}/api/auth/redeem-points`, {
         method: "POST",
         headers: {
@@ -71,9 +72,9 @@ const Dashboard = () => {
           points: data.points,
           walletBalance: data.walletBalance,
         };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        sessionStorage.setItem("user", JSON.stringify(updatedUser)); // 🎯 SECURE
         setUser(updatedUser);
-        window.dispatchEvent(new Event("storage")); // Instantly updates the Navbar
+        window.dispatchEvent(new Event("storage"));
         alert(
           t("redeem_success") ||
             "Points successfully converted to Wallet Balance!",
@@ -92,7 +93,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchMyReservations = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token"); // 🎯 SECURE
         if (!token || !user.email) {
           setLoadingRes(false);
           return;
@@ -130,7 +131,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token"); // 🎯 SECURE
       const res = await fetch(`${API_BASE_URL}/api/auth/update-profile`, {
         method: "PATCH",
         headers: {
@@ -150,7 +151,7 @@ const Dashboard = () => {
           ...user,
           name: data.user?.name || newName.trim(),
         };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        sessionStorage.setItem("user", JSON.stringify(updatedUser)); // 🎯 SECURE
         setUser(updatedUser);
         setIsEditing(false);
         window.dispatchEvent(new Event("storage"));
@@ -169,7 +170,7 @@ const Dashboard = () => {
     if (!confirmed) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token"); // 🎯 SECURE
       const res = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -207,7 +208,7 @@ const Dashboard = () => {
     reader.onloadend = () => {
       const base64String = reader.result;
       const updatedUser = { ...user, profilePic: base64String };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      sessionStorage.setItem("user", JSON.stringify(updatedUser)); // 🎯 SECURE
       setUser(updatedUser);
       window.dispatchEvent(new Event("storage"));
     };
@@ -216,7 +217,6 @@ const Dashboard = () => {
   return (
     <div className="bg-cream min-h-screen pt-24 md:pt-40 pb-20 px-4 md:px-6 font-serif overflow-x-hidden">
       <div className="max-w-5xl mx-auto">
-        {/* HEADER SECTION */}
         <header className="mb-12 flex flex-col md:flex-row items-center gap-6 md:gap-8 border-b border-sand pb-10 md:pb-12">
           <div className="relative group">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-sand shadow-xl bg-white flex items-center justify-center">
@@ -296,15 +296,12 @@ const Dashboard = () => {
           </div>
         </header>
 
-        {/* 🎯 WALLET & POINTS SECTION */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {/* Harvest Points Card */}
           <section className="p-8 md:p-10 bg-earth-dark text-cream flex flex-col justify-between shadow-2xl relative overflow-hidden rounded-sm">
             <div className="relative z-10">
               <h3 className="uppercase tracking-[0.4em] text-[10px] font-bold text-cream/40 mb-4">
                 {t("harvest_points") || "HARVEST POINTS"}
               </h3>
-              {/* FIXED: Added fallback (user.points || 0) */}
               <p className="text-5xl md:text-6xl font-sans font-light tracking-tighter">
                 {(user.points || 0).toLocaleString()}
               </p>
@@ -321,13 +318,11 @@ const Dashboard = () => {
             <i className="fas fa-leaf absolute right-[-20px] bottom-[-20px] text-9xl opacity-5 rotate-12 pointer-events-none"></i>
           </section>
 
-          {/* Digital Wallet Card */}
           <section className="p-8 md:p-10 bg-white border border-sand flex flex-col justify-between shadow-xl relative overflow-hidden rounded-sm">
             <div>
               <h3 className="uppercase tracking-[0.4em] text-[10px] font-bold text-earth-medium mb-4">
                 {t("digital_wallet") || "DIGITAL WALLET"}
               </h3>
-              {/* FIXED: Added fallback (user.walletBalance || 0) */}
               <p className="text-5xl md:text-6xl font-sans font-light tracking-tighter text-earth-dark">
                 ${(user.walletBalance || 0).toFixed(2)}
               </p>
@@ -345,7 +340,6 @@ const Dashboard = () => {
           </section>
         </div>
 
-        {/* RESERVATIONS SECTION */}
         <section className="mb-20">
           <div className="flex justify-between items-end mb-8 border-b border-sand pb-4">
             <h2 className="text-2xl md:text-3xl text-earth-dark italic">
@@ -420,13 +414,7 @@ const Dashboard = () => {
 
                   <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-6 md:gap-8 border-t md:border-t-0 border-sand/30 pt-4 md:pt-0">
                     <span
-                      className={`text-[9px] uppercase tracking-[0.3em] font-bold px-4 py-2 rounded-full border ${
-                        res.status === "confirmed"
-                          ? "bg-green-50 text-green-700 border-green-100"
-                          : res.status === "declined"
-                            ? "bg-red-50 text-red-700 border-red-100"
-                            : "bg-orange-50 text-orange-700 border-orange-100"
-                      }`}
+                      className={`text-[9px] uppercase tracking-[0.3em] font-bold px-4 py-2 rounded-full border ${res.status === "confirmed" ? "bg-green-50 text-green-700 border-green-100" : res.status === "declined" ? "bg-red-50 text-red-700 border-red-100" : "bg-orange-50 text-orange-700 border-orange-100"}`}
                     >
                       {t(`status_${res.status || "pending"}`)}
                     </span>
