@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/immutability */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,11 +13,11 @@ const AdminDashboard = () => {
 
   const fetchReservations = async () => {
     try {
-      const token = localStorage.getItem("token"); // 🎯 GET THE KEY
+      const token = localStorage.getItem("token");
 
       const res = await fetch(`${API_BASE_URL}/api/reservations/all`, {
         headers: {
-          Authorization: `Bearer ${token}`, // 🎯 SEND THE KEY
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -40,7 +40,6 @@ const AdminDashboard = () => {
       setError("");
     } catch (err) {
       console.error("Fetch error:", err);
-      // If it literally can't connect, err.message is usually "Failed to fetch"
       setError(
         err.message === "Failed to fetch"
           ? "Connection Refused: Is your backend server running on port 5005?"
@@ -62,10 +61,12 @@ const AdminDashboard = () => {
     }
 
     const user = JSON.parse(storedUser);
-    if (!user.isAdmin) {
-      navigate("/");
+
+    // 🎯 FIXED: Now uses your specific email to verify Admin status
+    if (user.email !== "lana.shirzad@gmail.com") {
+      navigate("/"); // Kick regular users out to the home page
     } else {
-      fetchReservations();
+      fetchReservations(); // Let the admin in
     }
   }, [navigate]);
 
@@ -76,7 +77,7 @@ const AdminDashboard = () => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 🎯 SEND TOKEN
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status }),
       });
@@ -97,7 +98,7 @@ const AdminDashboard = () => {
       const res = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`, // 🎯 SEND TOKEN
+          Authorization: `Bearer ${token}`,
         },
       });
       if (res.ok) {
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
             <p className="text-[10px] uppercase tracking-[0.4em] text-earth-medium mb-2 font-sans font-bold">
               Admin Panel
             </p>
-            <h1 className="text-6xl text-earth-dark italic leading-tight">
+            <h1 className="text-4xl md:text-6xl text-earth-dark italic leading-tight">
               Manifest
             </h1>
           </div>
@@ -169,7 +170,7 @@ const AdminDashboard = () => {
             </div>
             <button
               onClick={() => window.print()}
-              className="bg-earth-dark text-white px-6 py-3 text-[10px] uppercase tracking-widest cursor-pointer hover:bg-earth-medium transition-colors border-none"
+              className="bg-earth-dark text-white px-6 py-3 text-[10px] uppercase tracking-widest cursor-pointer hover:bg-earth-medium transition-colors border-none hidden md:block"
             >
               Print Manifest
             </button>
@@ -230,7 +231,8 @@ const AdminDashboard = () => {
                     </span>
                   </td>
                   <td className="p-6 text-right align-middle print:hidden">
-                    <div className="flex justify-end items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {/* 🎯 FIXED: Buttons are always visible on mobile, hide-until-hover on desktop */}
+                    <div className="flex justify-end items-center gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => updateStatus(res._id, "confirmed")}
                         className="bg-earth-dark text-white px-4 py-2 text-[10px] uppercase font-bold cursor-pointer border-none shadow-md"

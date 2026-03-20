@@ -48,7 +48,7 @@ const Auth = ({ setIsLoggedIn }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(false);
   const [isEnteringSanctuary, setIsEnteringSanctuary] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // 🎯 ADDED: Loading state
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -93,6 +93,26 @@ const Auth = ({ setIsLoggedIn }) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  // 🎯 SECURITY: Strict Password Checker
+  const validatePassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!minLength) return "Password must be at least 8 characters long.";
+    if (!hasUpper)
+      return "Password must contain at least one uppercase letter.";
+    if (!hasLower)
+      return "Password must contain at least one lowercase letter.";
+    if (!hasNumber) return "Password must contain at least one number.";
+    if (!hasSpecial)
+      return "Password must contain at least one special character (e.g., !@#$%).";
+
+    return null; // Password is secure
+  };
+
   const handleForgotPassword = async () => {
     if (!formData.email)
       return setError("Please enter your email address first.");
@@ -117,7 +137,17 @@ const Auth = ({ setIsLoggedIn }) => {
     e.preventDefault();
     setError("");
     setMessage("");
-    setIsLoading(true); // 🎯 ADDED: Turn on loading when clicked
+
+    // 🎯 SECURITY CHECK: Only validate strong passwords during Sign Up
+    if (!isLogin) {
+      const passwordError = validatePassword(formData.password);
+      if (passwordError) {
+        setError(passwordError);
+        return; // Stop the form submission
+      }
+    }
+
+    setIsLoading(true);
 
     const url = isLogin
       ? `${API_BASE_URL}/api/auth/login`
@@ -154,7 +184,7 @@ const Auth = ({ setIsLoggedIn }) => {
     } catch (err) {
       setError(err.message);
     } finally {
-      setIsLoading(false); // 🎯 ADDED: Turn off loading when done
+      setIsLoading(false);
     }
   };
 
@@ -166,7 +196,7 @@ const Auth = ({ setIsLoggedIn }) => {
         className={`bg-cream min-h-screen flex items-center justify-center pt-24 pb-12 px-6 font-serif transition-opacity duration-1000 ${isEnteringSanctuary ? "opacity-0" : "opacity-100"}`}
       >
         <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white/40 backdrop-blur-md border border-sand shadow-2xl overflow-hidden min-h-[680px]">
-          {/* LEFT SIDE: WISDOM */}
+          {/* LEFT SIDE: WISDOM & PROMO */}
           <div
             className="p-12 lg:p-16 text-cream flex flex-col justify-center relative transition-colors duration-1000 ease-in-out"
             style={{
@@ -264,7 +294,7 @@ const Auth = ({ setIsLoggedIn }) => {
                     id="name"
                     type="text"
                     required
-                    value={formData.name} // 🎯 ADDED: Controlled input
+                    value={formData.name}
                     onChange={handleChange}
                     className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark italic border-none"
                     placeholder="Lana Del Rey"
@@ -281,7 +311,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   type="email"
                   autoComplete="username"
                   required
-                  value={formData.email} // 🎯 ADDED: Controlled input
+                  value={formData.email}
                   onChange={handleChange}
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark italic border-none"
                   placeholder="nature@lolive.com"
@@ -297,11 +327,18 @@ const Auth = ({ setIsLoggedIn }) => {
                   type="password"
                   autoComplete="current-password"
                   required
-                  value={formData.password} // 🎯 ADDED: Controlled input
+                  value={formData.password}
                   onChange={handleChange}
                   className="w-full bg-transparent border-b border-sand py-2 outline-none focus:border-earth-dark transition-all text-earth-dark border-none"
                   placeholder="••••••••"
                 />
+                {/* 🎯 SECURITY: Helper text for new users */}
+                {!isLogin && (
+                  <p className="text-[9px] text-gray-400 mt-2 font-sans tracking-wide">
+                    Must be 8+ chars with uppercase, lowercase, number, &
+                    special char.
+                  </p>
+                )}
               </div>
 
               {isLogin && (
@@ -327,7 +364,6 @@ const Auth = ({ setIsLoggedIn }) => {
                 </div>
               )}
 
-              {/* 🎯 ADDED: Loading state disables the button and changes text */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -352,7 +388,7 @@ const Auth = ({ setIsLoggedIn }) => {
                   setIsLogin(!isLogin);
                   setError("");
                   setMessage("");
-                  setFormData({ name: "", email: "", password: "" }); // 🎯 ADDED: Clears form when switching
+                  setFormData({ name: "", email: "", password: "" });
                 }}
                 className="text-earth-medium hover:text-earth-dark text-[10px] uppercase tracking-[0.2em] font-bold transition-all bg-transparent border-none cursor-pointer"
               >
