@@ -15,7 +15,9 @@ router.post("/register", async (req, res) => {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: "User already exists" });
 
-    user = new User({ name, email, password });
+    // 🎯 THE WELCOME HARVEST: Automatically grant 2000 points upon creation
+    user = new User({ name, email, password, points: 2000 });
+
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     await user.save();
@@ -31,8 +33,8 @@ router.post("/register", async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        points: user.points,
-        walletBalance: user.walletBalance, // 🎯 Added
+        points: user.points, // This will now send '2000' straight to the frontend!
+        walletBalance: user.walletBalance,
         isAdmin: user.isAdmin,
       },
       msg: "Registration successful!",
@@ -66,7 +68,7 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         points: user.points,
-        walletBalance: user.walletBalance, // 🎯 Added
+        walletBalance: user.walletBalance,
         isAdmin: user.isAdmin,
       },
     });
@@ -102,6 +104,7 @@ router.post("/redeem-points", async (req, res) => {
     res.status(500).json({ msg: "Redemption failed" });
   }
 });
+
 // --- RESET PASSWORD ROUTE ---
 router.post("/reset-password/:token", async (req, res) => {
   try {
