@@ -21,7 +21,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
-  // 🎯 USER STATE (Now strictly using sessionStorage)
+  // 🎯 USER STATE (Secure Session Storage)
   const [user, setUser] = useState(() => {
     try {
       const savedUser = sessionStorage.getItem("user");
@@ -54,7 +54,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         return;
       }
       try {
-        const savedUser = sessionStorage.getItem("user"); // 🎯 SECURE
+        const savedUser = sessionStorage.getItem("user");
         const storedNotes = localStorage.getItem("notifications");
 
         if (savedUser) setUser(JSON.parse(savedUser));
@@ -74,6 +74,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     };
   }, [isLoggedIn]);
 
+  // 🎯 THE ADMIN SWITCH
   const isAdmin = user?.email === "lana.shirzad@gmail.com";
 
   const clearNotifications = () => {
@@ -83,8 +84,8 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear(); // 🎯 SECURE: Wipes session memory
-    localStorage.clear(); // Clears remaining local data like cart/notes
+    sessionStorage.clear();
+    localStorage.clear();
     if (setIsLoggedIn) setIsLoggedIn(false);
     setUser(null);
     setIsMobileMenuOpen(false);
@@ -111,6 +112,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         }`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* LOGO */}
           <Link
             to="/"
             className="no-underline z-50"
@@ -129,25 +131,31 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             </div>
           </Link>
 
+          {/* DESKTOP LINKS */}
           <div className="hidden md:flex items-center space-x-8 uppercase tracking-[0.15em] text-[11px] font-sans font-semibold">
-            <Link
-              to="/about"
-              className="text-earth-dark hover:text-earth-light no-underline transition-colors"
-            >
-              {t("our_story")}
-            </Link>
-            <Link
-              to="/menu"
-              className="text-earth-dark hover:text-earth-light no-underline transition-colors"
-            >
-              {t("menu")}
-            </Link>
-            <Link
-              to="/reservation"
-              className="text-earth-dark hover:text-earth-light no-underline transition-colors"
-            >
-              {t("book_table")}
-            </Link>
+            {/* 🎯 REGULAR USERS ONLY: About, Menu, Reservation */}
+            {!isAdmin && (
+              <>
+                <Link
+                  to="/about"
+                  className="text-earth-dark hover:text-earth-light no-underline transition-colors"
+                >
+                  {t("our_story")}
+                </Link>
+                <Link
+                  to="/menu"
+                  className="text-earth-dark hover:text-earth-light no-underline transition-colors"
+                >
+                  {t("menu")}
+                </Link>
+                <Link
+                  to="/reservation"
+                  className="text-earth-dark hover:text-earth-light no-underline transition-colors"
+                >
+                  {t("book_table")}
+                </Link>
+              </>
+            )}
 
             {!isLoggedIn ? (
               <Link
@@ -158,6 +166,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </Link>
             ) : (
               <div className="flex items-center border-l border-earth-dark/20 pl-8 gap-6">
+                {/* 🎯 REGULAR USERS ONLY: Wallet and Profile Icon */}
                 {!isAdmin && (
                   <>
                     <div className="flex flex-col items-end">
@@ -190,6 +199,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                   </>
                 )}
 
+                {/* 🎯 ADMIN ONLY: Admin Panel Link */}
                 {isAdmin && (
                   <Link
                     to="/admin"
@@ -200,6 +210,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                   </Link>
                 )}
 
+                {/* EVERYONE LOGGED IN: Sign Out */}
                 <button
                   onClick={handleLogout}
                   className="bg-transparent border-none text-red-800/60 hover:text-red-800 cursor-pointer text-[10px] uppercase font-bold tracking-widest transition-colors ml-2"
@@ -212,6 +223,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
 
           <div className="flex items-center space-x-5 md:space-x-6 z-50">
+            {/* LANGUAGE TOGGLE */}
             <div className="hidden md:flex items-center space-x-2 text-[9px] font-sans font-bold text-earth-dark/50 tracking-widest">
               <button
                 onClick={() => changeLanguage("en")}
@@ -235,74 +247,81 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </button>
             </div>
 
-            {isLoggedIn && (
-              <div className="relative">
-                <button
-                  onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                  className="relative z-50 text-earth-dark hover:text-earth-light bg-transparent border-none cursor-pointer flex items-center transition-transform hover:scale-110"
-                >
-                  <i className="far fa-bell text-lg md:text-xl"></i>
-                  {notifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#FDFCF0] animate-pulse"></span>
-                  )}
-                </button>
-
-                {isNotificationOpen && (
-                  <div className="absolute right-[-40px] md:right-0 mt-6 w-[85vw] max-w-[320px] md:w-80 bg-[#FDFCF0]/95 backdrop-blur-xl border border-sand shadow-2xl p-0 z-50 rounded-sm overflow-hidden">
-                    <div className="p-4 border-b border-sand flex justify-between items-center bg-white/60">
-                      <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-earth-medium">
-                        {t("notifications.title")}
-                      </h4>
+            {/* 🎯 REGULAR USERS ONLY: Notification Bell & Cart */}
+            {!isAdmin && (
+              <>
+                {isLoggedIn && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                      className="relative z-50 text-earth-dark hover:text-earth-light bg-transparent border-none cursor-pointer flex items-center transition-transform hover:scale-110"
+                    >
+                      <i className="far fa-bell text-lg md:text-xl"></i>
                       {notifications.length > 0 && (
-                        <button
-                          onClick={clearNotifications}
-                          className="text-[9px] text-gray-400 bg-transparent cursor-pointer hover:text-red-800 uppercase font-bold tracking-widest border-none"
-                        >
-                          {t("notifications.clear_all")}
-                        </button>
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#FDFCF0] animate-pulse"></span>
                       )}
-                    </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.length > 0 ? (
-                        notifications.map((note, idx) => (
-                          <div
-                            key={idx}
-                            className="p-5 border-b border-sand/50 last:border-0 hover:bg-white/50 transition-colors"
-                          >
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-earth-dark mb-1">
-                              {note.title}
-                            </p>
-                            <p className="text-xs italic text-earth-medium font-serif">
-                              {note.message}
-                            </p>
-                            <p className="text-[8px] uppercase text-gray-400 mt-2 tracking-widest font-sans">
-                              {note.date}
-                            </p>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-12 text-center text-gray-400 italic text-xs">
-                          {t("notifications.empty")}
+                    </button>
+
+                    {isNotificationOpen && (
+                      <div className="absolute right-[-40px] md:right-0 mt-6 w-[85vw] max-w-[320px] md:w-80 bg-[#FDFCF0]/95 backdrop-blur-xl border border-sand shadow-2xl p-0 z-50 rounded-sm overflow-hidden">
+                        <div className="p-4 border-b border-sand flex justify-between items-center bg-white/60">
+                          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-earth-medium">
+                            {t("notifications.title")}
+                          </h4>
+                          {notifications.length > 0 && (
+                            <button
+                              onClick={clearNotifications}
+                              className="text-[9px] text-gray-400 bg-transparent cursor-pointer hover:text-red-800 uppercase font-bold tracking-widest border-none"
+                            >
+                              {t("notifications.clear_all")}
+                            </button>
+                          )}
                         </div>
-                      )}
-                    </div>
+                        <div className="max-h-80 overflow-y-auto">
+                          {notifications.length > 0 ? (
+                            notifications.map((note, idx) => (
+                              <div
+                                key={idx}
+                                className="p-5 border-b border-sand/50 last:border-0 hover:bg-white/50 transition-colors"
+                              >
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-earth-dark mb-1">
+                                  {note.title}
+                                </p>
+                                <p className="text-xs italic text-earth-medium font-serif">
+                                  {note.message}
+                                </p>
+                                <p className="text-[8px] uppercase text-gray-400 mt-2 tracking-widest font-sans">
+                                  {note.date}
+                                </p>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="p-12 text-center text-gray-400 italic text-xs">
+                              {t("notifications.empty")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+
+                {/* CART */}
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative text-earth-dark bg-transparent cursor-pointer flex items-center transition-transform hover:scale-110 border-none"
+                >
+                  <i className="fas fa-shopping-bag text-lg md:text-xl"></i>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-earth-dark text-cream text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-sans font-bold shadow-md">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
+              </>
             )}
 
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative text-earth-dark bg-transparent cursor-pointer flex items-center transition-transform hover:scale-110 border-none"
-            >
-              <i className="fas fa-shopping-bag text-lg md:text-xl"></i>
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-earth-dark text-cream text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-sans font-bold shadow-md">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
+            {/* MOBILE TOGGLE */}
             <button
               className="md:hidden text-earth-dark text-xl bg-transparent cursor-pointer border-none ml-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -314,30 +333,49 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
         </div>
 
+        {/* MOBILE MENU */}
         <div
           className={`md:hidden absolute top-full left-0 w-full bg-[#FDFCF0] transition-all duration-300 overflow-hidden shadow-lg ${isMobileMenuOpen ? "max-h-screen opacity-100 py-10" : "max-h-0 opacity-0"}`}
         >
           <div className="flex flex-col items-center space-y-8 uppercase tracking-[0.2em] text-xs font-sans font-bold text-earth-dark">
-            {isLoggedIn && !isAdmin && (
+            {/* 🎯 REGULAR USERS ONLY: Mobile Wallet & Links */}
+            {!isAdmin && (
               <>
-                <div className="flex flex-col items-center bg-sand/20 px-10 py-4 rounded-sm">
-                  <span className="text-[8px] opacity-50 mb-1 tracking-widest">
-                    {t("wallet_balance") || "WALLET BALANCE"}
-                  </span>
-                  <span className="text-xl italic">
-                    ${user?.walletBalance?.toFixed(2) || "0.00"}
-                  </span>
-                </div>
+                {isLoggedIn && (
+                  <>
+                    <div className="flex flex-col items-center bg-sand/20 px-10 py-4 rounded-sm">
+                      <span className="text-[8px] opacity-50 mb-1 tracking-widest">
+                        {t("wallet_balance") || "WALLET BALANCE"}
+                      </span>
+                      <span className="text-xl italic">
+                        ${user?.walletBalance?.toFixed(2) || "0.00"}
+                      </span>
+                    </div>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 no-underline text-earth-dark"
+                    >
+                      <i className="fas fa-user-circle"></i> {t("dashboard")}
+                    </Link>
+                  </>
+                )}
+                <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
+                  {t("our_story")}
+                </Link>
+                <Link to="/menu" onClick={() => setIsMobileMenuOpen(false)}>
+                  {t("menu")}
+                </Link>
                 <Link
-                  to="/dashboard"
+                  to="/reservation"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 no-underline text-earth-dark"
                 >
-                  <i className="fas fa-user-circle"></i> {t("dashboard")}
+                  {t("book_table")}
                 </Link>
               </>
             )}
 
+            {/* 🎯 ADMIN ONLY: Mobile Admin Panel Link */}
             {isLoggedIn && isAdmin && (
               <Link
                 to="/admin"
@@ -348,16 +386,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                 {t("admin_panel") || "ADMIN PANEL"}
               </Link>
             )}
-
-            <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
-              {t("our_story")}
-            </Link>
-            <Link to="/menu" onClick={() => setIsMobileMenuOpen(false)}>
-              {t("menu")}
-            </Link>
-            <Link to="/reservation" onClick={() => setIsMobileMenuOpen(false)}>
-              {t("book_table")}
-            </Link>
 
             <div className="pt-4 w-full px-10 text-center">
               {!isLoggedIn ? (
@@ -381,7 +409,8 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         </div>
       </nav>
 
-      {isCartOpen && (
+      {/* --- CART DRAWER (Only accessible if not admin, but kept here for logic flow) --- */}
+      {isCartOpen && !isAdmin && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div
             className="absolute inset-0 bg-earth-dark/40 backdrop-blur-sm"
