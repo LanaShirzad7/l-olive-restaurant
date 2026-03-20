@@ -9,8 +9,12 @@ const User = require("../models/User");
 // --- REGISTER ROUTE ---
 router.post("/register", async (req, res) => {
   try {
-    const { name, password } = req.body;
-    const email = req.body.email.toLowerCase().trim();
+    const { name, password, email: rawEmail } = req.body;
+
+    if (!rawEmail || !password) {
+      return res.status(400).json({ msg: "Missing email or password" });
+    }
+    const email = rawEmail.toLowerCase().trim();
 
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: "User already exists" });
@@ -22,9 +26,15 @@ router.post("/register", async (req, res) => {
     user.password = await bcrypt.hash(password, salt);
     await user.save();
 
+    if (!process.env.JWT_SECRET) {
+      console.error(
+        "🚨 FATAL ERROR: JWT_SECRET is missing from your .env file!",
+      );
+    }
+
     const payload = { id: user._id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "24h",
+      expiresIn: "1h", // 🎯 SECURE: Changed to 1 hour
     });
 
     res.status(201).json({
@@ -33,13 +43,14 @@ router.post("/register", async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        points: user.points, // This will now send '2000' straight to the frontend!
+        points: user.points,
         walletBalance: user.walletBalance,
         isAdmin: user.isAdmin,
       },
       msg: "Registration successful!",
     });
   } catch (err) {
+    console.error("🚨 REGISTER CRASH REPORT:", err);
     res.status(500).json({ msg: "Server Error during registration" });
   }
 });
@@ -47,8 +58,12 @@ router.post("/register", async (req, res) => {
 // --- LOGIN ROUTE ---
 router.post("/login", async (req, res) => {
   try {
-    const { password } = req.body;
-    const email = req.body.email.toLowerCase().trim();
+    const { password, email: rawEmail } = req.body;
+
+    if (!rawEmail || !password) {
+      return res.status(400).json({ msg: "Missing email or password" });
+    }
+    const email = rawEmail.toLowerCase().trim();
 
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "Invalid Credentials" });
@@ -56,9 +71,16 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid Credentials" });
 
+    if (!process.env.JWT_SECRET) {
+      console.error(
+        "🚨 FATAL ERROR: JWT_SECRET is missing from your .env file!",
+      );
+      return res.status(500).json({ msg: "Server configuration error." });
+    }
+
     const payload = { id: user._id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "24h",
+      expiresIn: "1h", // 🎯 SECURE: Changed to 1 hour
     });
 
     res.json({
@@ -73,6 +95,7 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("🚨 LOGIN CRASH REPORT:", err); // 🎯 REVEALS THE EXACT ERROR IN TERMINAL
     res.status(500).json({ msg: "Server Error during login" });
   }
 });
@@ -101,6 +124,7 @@ router.post("/redeem-points", async (req, res) => {
       walletBalance: user.walletBalance,
     });
   } catch (err) {
+    console.error("🚨 REDEEM CRASH REPORT:", err);
     res.status(500).json({ msg: "Redemption failed" });
   }
 });
@@ -127,7 +151,7 @@ router.post("/reset-password/:token", async (req, res) => {
       msg: "Success! Your password has been updated. You can now log in.",
     });
   } catch (err) {
-    console.error("Reset Password Error:", err);
+    console.error("🚨 RESET PASSWORD CRASH REPORT:", err);
     res.status(500).json({ msg: "Server error resetting password." });
   }
 });
