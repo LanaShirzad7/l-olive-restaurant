@@ -45,10 +45,7 @@ const Dashboard = () => {
 
   const handleRedeem = async () => {
     if ((user.points || 0) < 100) {
-      alert(
-        t("minimum_points_required") ||
-          "Minimum 100 points required to redeem.",
-      );
+      alert(t("dashboard.minimum_points_required"));
       return;
     }
 
@@ -75,16 +72,13 @@ const Dashboard = () => {
         sessionStorage.setItem("user", JSON.stringify(updatedUser)); // 🎯 SECURE
         setUser(updatedUser);
         window.dispatchEvent(new Event("storage"));
-        alert(
-          t("redeem_success") ||
-            "Points successfully converted to Wallet Balance!",
-        );
+        alert(t("dashboard.redeem_success"));
       } else {
-        alert(data.msg || "Redemption failed.");
+        alert(data.msg || t("dashboard.network_error"));
       }
     } catch (err) {
       console.error("Redeem Error:", err);
-      alert("Network error. Could not connect to the sanctuary server.");
+      alert(t("dashboard.network_error"));
     } finally {
       setLoading(false);
     }
@@ -111,7 +105,15 @@ const Dashboard = () => {
 
         const data = await res.json();
         if (res.ok) {
-          setReservations(Array.isArray(data) ? data : []);
+          // 🎯 THE FIX: Filter out duplicate reservations based on ID
+          if (Array.isArray(data)) {
+            const uniqueReservations = Array.from(
+              new Set(data.map((a) => a._id)),
+            ).map((id) => data.find((a) => a._id === id));
+            setReservations(uniqueReservations);
+          } else {
+            setReservations([]);
+          }
         }
       } catch (err) {
         console.error("Archive fetch failed:", err);
@@ -164,9 +166,7 @@ const Dashboard = () => {
   };
 
   const handleCancelReservation = async (id, date) => {
-    const confirmed = window.confirm(
-      t("release_confirm") || "Release this reservation back to the community?",
-    );
+    const confirmed = window.confirm(t("dashboard.release_confirm"));
     if (!confirmed) return;
 
     try {
@@ -182,10 +182,8 @@ const Dashboard = () => {
           localStorage.getItem("notifications") || "[]",
         );
         const newNote = {
-          title: t("res_cancelled") || "Reservation Released",
-          message:
-            t("res_released_msg", { date }) ||
-            `Your table for ${date} has been opened.`,
+          title: t("dashboard.res_cancelled"),
+          message: t("dashboard.res_released_msg", { date }),
           date: new Date().toLocaleString(),
         };
         localStorage.setItem(
@@ -249,7 +247,7 @@ const Dashboard = () => {
 
           <div className="flex-1 text-center md:text-left">
             <p className="text-[10px] text-earth-medium uppercase tracking-[0.4em] font-sans font-bold mb-2">
-              {t("member_sanctuary") || "SANCTUARY MEMBER"}
+              {t("dashboard.member_sanctuary")}
             </p>
 
             {isEditing ? (
@@ -267,13 +265,13 @@ const Dashboard = () => {
                     disabled={loading}
                     className="bg-earth-dark text-cream px-6 py-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer border-none shadow-lg"
                   >
-                    {loading ? "..." : t("save") || "SAVE"}
+                    {loading ? "..." : t("dashboard.save")}
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
                     className="bg-transparent border border-sand text-earth-medium px-4 py-2 text-[10px] uppercase font-bold cursor-pointer"
                   >
-                    {t("cancel") || "CANCEL"}
+                    {t("dashboard.cancel")}
                   </button>
                 </div>
               </div>
@@ -300,7 +298,7 @@ const Dashboard = () => {
           <section className="p-8 md:p-10 bg-earth-dark text-cream flex flex-col justify-between shadow-2xl relative overflow-hidden rounded-sm">
             <div className="relative z-10">
               <h3 className="uppercase tracking-[0.4em] text-[10px] font-bold text-cream/40 mb-4">
-                {t("harvest_points") || "HARVEST POINTS"}
+                {t("dashboard.harvest_points")}
               </h3>
               <p className="text-5xl md:text-6xl font-sans font-light tracking-tighter">
                 {(user.points || 0).toLocaleString()}
@@ -312,8 +310,8 @@ const Dashboard = () => {
               className="relative z-10 mt-8 px-8 py-4 bg-cream text-earth-dark text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-sand transition-all border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
             >
               {loading
-                ? "PROCESSING..."
-                : t("redeem_to_wallet") || "REDEEM TO WALLET"}
+                ? t("dashboard.processing")
+                : t("dashboard.redeem_to_wallet")}
             </button>
             <i className="fas fa-leaf absolute right-[-20px] bottom-[-20px] text-9xl opacity-5 rotate-12 pointer-events-none"></i>
           </section>
@@ -321,20 +319,19 @@ const Dashboard = () => {
           <section className="p-8 md:p-10 bg-white border border-sand flex flex-col justify-between shadow-xl relative overflow-hidden rounded-sm">
             <div>
               <h3 className="uppercase tracking-[0.4em] text-[10px] font-bold text-earth-medium mb-4">
-                {t("digital_wallet") || "DIGITAL WALLET"}
+                {t("dashboard.digital_wallet")}
               </h3>
               <p className="text-5xl md:text-6xl font-sans font-light tracking-tighter text-earth-dark">
                 ${(user.walletBalance || 0).toFixed(2)}
               </p>
               <p className="mt-4 text-[10px] text-gray-400 italic tracking-wide">
-                {t("3_cashback_note") ||
-                  "3% Automatic cashback active on all orders"}
+                {t("dashboard.cashback_note")}
               </p>
             </div>
             <div className="mt-8 flex items-center gap-2 text-earth-medium">
               <i className="fas fa-wallet text-sm"></i>
               <span className="text-[10px] uppercase font-bold tracking-widest">
-                {t("verified_account") || "VERIFIED"}
+                {t("dashboard.verified_account")}
               </span>
             </div>
           </section>
@@ -343,10 +340,10 @@ const Dashboard = () => {
         <section className="mb-20">
           <div className="flex justify-between items-end mb-8 border-b border-sand pb-4">
             <h2 className="text-2xl md:text-3xl text-earth-dark italic">
-              {t("res_history") || "Reservation History"}
+              {t("dashboard.res_history")}
             </h2>
             <span className="text-[10px] uppercase tracking-widest text-earth-medium font-sans font-bold">
-              {t("archive") || "ARCHIVE"}
+              {t("dashboard.archive")}
             </span>
           </div>
 
@@ -365,21 +362,20 @@ const Dashboard = () => {
           ) : reservations.length === 0 ? (
             <div className="py-20 bg-white/30 border border-dashed border-sand text-center">
               <p className="text-gray-400 italic mb-6">
-                {t("no_res_msg") ||
-                  "Your sanctuary records are currently empty."}
+                {t("dashboard.no_res_msg")}
               </p>
               <Link
                 to="/reservation"
                 className="inline-block px-8 py-3 bg-earth-dark text-cream text-[10px] uppercase font-bold tracking-[0.2em] no-underline transition-colors hover:bg-earth-medium"
               >
-                {t("book_first_table") || "BOOK YOUR FIRST TABLE"}
+                {t("dashboard.book_first_table")}
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:gap-6">
-              {reservations.map((res) => (
+              {reservations.map((res, index) => (
                 <div
-                  key={res._id}
+                  key={res._id || index}
                   className="bg-white/60 backdrop-blur-sm p-6 md:p-8 border border-sand flex flex-col md:flex-row justify-between items-center gap-6 group transition-all shadow-sm hover:shadow-md hover:bg-white"
                 >
                   <div className="flex items-center gap-6 md:gap-8 w-full md:w-auto">
@@ -402,21 +398,29 @@ const Dashboard = () => {
                     </div>
                     <div className="flex-1">
                       <h4 className="text-lg md:text-xl text-earth-dark italic mb-1">
-                        {res.time} — {res.guests} {t("guests") || "Guests"}
+                        {res.time} — {res.guests} {t("dashboard.guests")}
                       </h4>
                       <p className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-gray-400 font-sans">
-                        {t(res.area?.toLowerCase().replace(/\s+/g, "_")) ||
+                        {t(
+                          `dashboard.${res.area?.toLowerCase().replace(/\s+/g, "_")}`,
+                        ) ||
                           res.area ||
-                          "Main Sanctuary"}
+                          t("dashboard.main_sanctuary")}
                       </p>
                     </div>
                   </div>
 
                   <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-6 md:gap-8 border-t md:border-t-0 border-sand/30 pt-4 md:pt-0">
                     <span
-                      className={`text-[9px] uppercase tracking-[0.3em] font-bold px-4 py-2 rounded-full border ${res.status === "confirmed" ? "bg-green-50 text-green-700 border-green-100" : res.status === "declined" ? "bg-red-50 text-red-700 border-red-100" : "bg-orange-50 text-orange-700 border-orange-100"}`}
+                      className={`text-[9px] uppercase tracking-[0.3em] font-bold px-4 py-2 rounded-full border ${
+                        res.status === "confirmed"
+                          ? "bg-green-50 text-green-700 border-green-100"
+                          : res.status === "declined"
+                            ? "bg-red-50 text-red-700 border-red-100"
+                            : "bg-orange-50 text-orange-700 border-orange-100"
+                      }`}
                     >
-                      {t(`status_${res.status || "pending"}`)}
+                      {t(`dashboard.status_${res.status || "pending"}`)}
                     </span>
                     {res.status !== "declined" && (
                       <button
@@ -425,7 +429,7 @@ const Dashboard = () => {
                         }
                         className="text-[10px] uppercase tracking-widest font-bold text-red-800/40 hover:text-red-800 bg-transparent border-none cursor-pointer transition-colors"
                       >
-                        {t("cancel") || "CANCEL"}
+                        {t("dashboard.cancel")}
                       </button>
                     )}
                   </div>
