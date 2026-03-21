@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -5,7 +6,7 @@ import { useTranslation } from "react-i18next";
 const SanctuaryAccess = () => {
   const { t } = useTranslation();
   return (
-    <div className="fixed inset-0 z-[200] bg-[#3D4828] flex flex-col items-center justify-center font-serif text-[#F5F5DC] animate-in fade-in duration-700">
+    <div className="fixed inset-0 z-200 bg-[#3D4828] flex flex-col items-center justify-center font-serif text-[#F5F5DC] animate-in fade-in duration-700">
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
         <span className="text-[50vh] opacity-5 italic select-none">O</span>
       </div>
@@ -21,7 +22,7 @@ const SanctuaryAccess = () => {
             {t("setting_table")}
           </p>
         </div>
-        <div className="w-48 h-[1px] bg-white/10 mx-auto relative overflow-hidden">
+        <div className="w-48 h-px bg-white/10 mx-auto relative overflow-hidden">
           <div className="absolute inset-0 bg-earth-medium animate-loading-line"></div>
         </div>
       </div>
@@ -181,7 +182,7 @@ const Auth = ({ setIsLoggedIn }) => {
       <div
         className={`bg-cream min-h-screen flex items-center justify-center pt-24 pb-12 px-6 font-serif transition-opacity duration-1000 ${isEnteringSanctuary ? "opacity-0" : "opacity-100"}`}
       >
-        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white/40 backdrop-blur-md border border-sand shadow-2xl overflow-hidden min-h-[680px]">
+        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white/40 backdrop-blur-md border border-sand shadow-2xl overflow-hidden min-h-170">
           <div
             className="p-12 lg:p-16 text-cream flex flex-col justify-center relative transition-colors duration-1000 ease-in-out"
             style={{
@@ -213,7 +214,7 @@ const Auth = ({ setIsLoggedIn }) => {
                       <div className="text-6xl font-sans font-light text-white tracking-tighter">
                         2,000
                       </div>
-                      <div className="h-12 w-[1px] bg-white/20"></div>
+                      <div className="h-12 w-px bg-white/20"></div>
                       <div>
                         <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-cream">
                           {t("welcome_pts_title")}
@@ -243,7 +244,7 @@ const Auth = ({ setIsLoggedIn }) => {
                     <div className="space-y-8 mt-12">
                       {activeWisdom.tips.map((tipKey, idx) => (
                         <div key={idx} className="flex gap-4 items-start">
-                          <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-[10px] italic font-serif flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-[10px] italic font-serif shrink-0">
                             {idx + 1}
                           </div>
                           <p className="text-[10px] tracking-[0.2em] leading-relaxed text-cream/70 uppercase font-sans font-bold pt-1">

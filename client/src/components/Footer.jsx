@@ -80,7 +80,7 @@ const Footer = () => {
               rel="noreferrer"
               className="group flex items-center gap-3 no-underline"
             >
-              <span className="w-8 h-[1px] bg-[#F5F5DC]/20 group-hover:w-12 group-hover:bg-[#F5F5DC] transition-all"></span>
+              <span className="w-8 h-px bg-[#F5F5DC]/20 group-hover:w-12 group-hover:bg-[#F5F5DC] transition-all"></span>
               <span className="text-[10px] uppercase tracking-widest text-[#F5F5DC]/70 group-hover:text-white transition-colors">
                 Instagram
               </span>
@@ -91,7 +91,7 @@ const Footer = () => {
               rel="noreferrer"
               className="group flex items-center gap-3 no-underline"
             >
-              <span className="w-8 h-[1px] bg-[#F5F5DC]/20 group-hover:w-12 group-hover:bg-[#F5F5DC] transition-all"></span>
+              <span className="w-8 h-px bg-[#F5F5DC]/20 group-hover:w-12 group-hover:bg-[#F5F5DC] transition-all"></span>
               <span className="text-[10px] uppercase tracking-widest text-[#F5F5DC]/70 group-hover:text-white transition-colors">
                 Facebook
               </span>
@@ -147,7 +147,7 @@ const Footer = () => {
 
       {/* --- LEGAL MODAL --- */}
       {activeModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <div
             className="absolute inset-0 bg-[#3D4828]/80 backdrop-blur-md"
             onClick={closeModal}

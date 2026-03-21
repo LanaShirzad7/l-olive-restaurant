@@ -125,7 +125,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-gradient-to-b from-[#71824F]/20 to-[#FDFCF0]">
+    <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-linear-to-b from-[#71824F]/20 to-[#FDFCF0]">
       <div className="max-w-7xl mx-auto">
         {error && (
           <div className="mb-6 p-6 bg-white border-l-4 border-red-600 shadow-md text-red-800 rounded-sm flex items-center gap-4">
@@ -176,7 +176,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="bg-white/40 backdrop-blur-md border border-sand shadow-xl rounded-sm overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left border-collapse">
+          <table className="w-full min-w-225 text-left border-collapse">
             <thead>
               <tr className="bg-earth-dark text-white uppercase text-[10px] tracking-[0.3em] font-sans">
                 <th className="p-6">Guest</th>

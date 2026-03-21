@@ -118,10 +118,10 @@ const Reservation = () => {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-gradient-to-b from-[#71824F]/20 to-[#FDFCF0] flex items-center justify-center">
+    <div className="min-h-screen pt-32 pb-20 px-6 font-serif bg-linear-to-b from-[#71824F]/20 to-[#FDFCF0] flex items-center justify-center">
       <div className="w-full max-w-6xl bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden rounded-sm">
         {/* LEFT SIDE: IMAGE & CONTACT */}
-        <div className="md:w-5/12 relative min-h-[400px]">
+        <div className="md:w-5/12 relative min-h-100">
           <img
             src="/reserve.jpg"
             alt="Restaurant Atmosphere"

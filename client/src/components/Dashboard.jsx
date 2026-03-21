@@ -277,7 +277,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="flex items-center justify-center md:justify-start gap-4 group">
-                <h1 className="text-4xl md:text-6xl text-earth-dark italic leading-tight break-words max-w-full">
+                <h1 className="text-4xl md:text-6xl text-earth-dark italic leading-tight wrap-break-word max-w-full">
                   {user.name}
                 </h1>
                 <button
@@ -313,7 +313,7 @@ const Dashboard = () => {
                 ? t("dashboard.processing")
                 : t("dashboard.redeem_to_wallet")}
             </button>
-            <i className="fas fa-leaf absolute right-[-20px] bottom-[-20px] text-9xl opacity-5 rotate-12 pointer-events-none"></i>
+            <i className="fas fa-leaf absolute -right-5 -bottom-5 text-9xl opacity-5 rotate-12 pointer-events-none"></i>
           </section>
 
           <section className="p-8 md:p-10 bg-white border border-sand flex flex-col justify-between shadow-xl relative overflow-hidden rounded-sm">
@@ -379,7 +379,7 @@ const Dashboard = () => {
                   className="bg-white/60 backdrop-blur-sm p-6 md:p-8 border border-sand flex flex-col md:flex-row justify-between items-center gap-6 group transition-all shadow-sm hover:shadow-md hover:bg-white"
                 >
                   <div className="flex items-center gap-6 md:gap-8 w-full md:w-auto">
-                    <div className="text-center border-r border-sand pr-6 md:pr-8 min-w-[70px] md:min-w-[100px]">
+                    <div className="text-center border-r border-sand pr-6 md:pr-8 min-w-17.5 md:min-w-25">
                       <p className="text-[10px] uppercase font-bold text-earth-medium tracking-widest mb-1">
                         {res.date
                           ? new Date(res.date).toLocaleDateString(

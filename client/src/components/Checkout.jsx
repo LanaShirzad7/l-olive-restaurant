@@ -243,7 +243,7 @@ const Checkout = () => {
               {t("checkout your selection")}
             </h2>
 
-            <div className="space-y-6 mb-10 max-h-[250px] overflow-y-auto pr-4">
+            <div className="space-y-6 mb-10 max-h-62.5 overflow-y-auto pr-4">
               {cart.map((item) => (
                 <div key={item.id} className="flex justify-between items-end">
                   <div>
