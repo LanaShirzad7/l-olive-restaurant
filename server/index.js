@@ -59,12 +59,7 @@ mongoose
 // --- SERVER LISTENER ---
 const PORT = process.env.PORT || 5005;
 
-// Only listen if we are NOT on Vercel (local development)
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server is breathing on port ${PORT}`);
-  });
-}
-
-// 🎯 Export for Vercel
-module.exports = app;
+// 🎯 FIX: No "if" statement wrapper, and binding to "0.0.0.0" for Render!
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server is breathing on port ${PORT}`);
+});
