@@ -1,6 +1,6 @@
 const SanctuaryAccess = () => {
   return (
-    <div className="fixed inset-0 z-[200] bg-[#3D4828] flex flex-col items-center justify-center font-serif text-[#F5F5DC]">
+    <div className="fixed inset-0 z-200 bg-[#3D4828] flex flex-col items-center justify-center font-serif text-[#F5F5DC]">
       {/* Decorative Watermark */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
         <span className="text-[50vh] opacity-5 italic select-none">O</span>
@@ -21,7 +21,7 @@ const SanctuaryAccess = () => {
         </div>
 
         {/* Elegant Loading Line */}
-        <div className="w-48 h-[1px] bg-white/10 mx-auto relative overflow-hidden">
+        <div className="w-48 h-1px bg-white/10 mx-auto relative overflow-hidden">
           <div className="absolute inset-0 bg-earth-medium animate-loading-line"></div>
         </div>
       </div>
