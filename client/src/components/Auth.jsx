@@ -48,7 +48,8 @@ const Auth = ({ setIsLoggedIn }) => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
+  const API_BASE_URL =
+    import.meta.env.VITE_API_URL || "https://l-olive-backend.onrender.com";
   const [activeWisdom, setActiveWisdom] = useState(null);
 
   const wisdomPool = [
