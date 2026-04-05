@@ -10,8 +10,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   // 🎯 FIXED: Added your live server address here
-  const API_BASE_URL =
-    import.meta.env.VITE_API_URL || "https://l-olive-backend.onrender.com";
+  const API_BASE_URL = "https://l-olive-backend.onrender.com";
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
