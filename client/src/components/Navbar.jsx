@@ -162,7 +162,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                 to="/auth"
                 className="text-earth-dark border border-earth-dark/40 px-4 py-2 no-underline hover:bg-earth-dark hover:text-cream transition-all"
               >
-                {t("sign_in") || "SIGN IN"}
+                {t("sign_up") || "SIGN UP"}
               </Link>
             ) : (
               <div className="flex items-center border-l border-earth-dark/20 pl-8 gap-6">
@@ -173,7 +173,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                       <span className="text-[7px] text-earth-medium opacity-60 tracking-[0.2em] uppercase font-sans">
                         {t("wallet") || "Wallet"}
                       </span>
-                      <span className="text-earth-dark font-sans font-bold text-[12px] mt-[-2px]">
+                      <span className="text-earth-dark font-sans font-bold text-[12px] mt- -2px">
                         ${user?.walletBalance?.toFixed(2) || "0.00"}
                       </span>
                     </div>
@@ -263,7 +263,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
                     </button>
 
                     {isNotificationOpen && (
-                      <div className="absolute right-[-40px] md:right-0 mt-6 w-[85vw] max-w-[320px] md:w-80 bg-[#FDFCF0]/95 backdrop-blur-xl border border-sand shadow-2xl p-0 z-50 rounded-sm overflow-hidden">
+                      <div className="absolute right- -40px md:right-0 mt-6 w-[85vw] max-w-[320px] md:w-80 bg-[#FDFCF0]/95 backdrop-blur-xl border border-sand shadow-2xl p-0 z-50 rounded-sm overflow-hidden">
                         <div className="p-4 border-b border-sand flex justify-between items-center bg-white/60">
                           <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-earth-medium">
                             {t("notifications.title")}
@@ -411,7 +411,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
 
       {/* --- CART DRAWER (Only accessible if not admin, but kept here for logic flow) --- */}
       {isCartOpen && !isAdmin && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
+        <div className="fixed inset-0 z-100 flex justify-end">
           <div
             className="absolute inset-0 bg-earth-dark/40 backdrop-blur-sm"
             onClick={() => setIsCartOpen(false)}
