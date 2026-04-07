@@ -41,8 +41,11 @@ const Reservation = () => {
     setLoading(true);
     setMessage("");
 
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
+    // 🎯 FIX 1: Use sessionStorage to match your Auth logic
+    const storedUser = sessionStorage.getItem("user");
+    const token = sessionStorage.getItem("token");
+
+    if (!storedUser || !token) {
       setMessage(t("sign_in_required"));
       setLoading(false);
       setTimeout(() => navigate("/auth"), 2000);
@@ -52,10 +55,13 @@ const Reservation = () => {
     const user = JSON.parse(storedUser);
 
     try {
-      // DYNAMIC URL: Works on localhost and Vercel!
       const response = await fetch(`${API_URL}/api/reservations`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // 🎯 FIX 2: Added the Authorization Token so the backend identifies you
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           userId: user.id || user._id,
           userEmail: user.email,
@@ -68,17 +74,13 @@ const Reservation = () => {
         }),
       });
 
-      // Handle "Unexpected token S" errors (Server crashes)
       const contentType = response.headers.get("content-type");
       if (!response.ok) {
         if (contentType && contentType.indexOf("application/json") !== -1) {
           const errorData = await response.json();
           throw new Error(errorData.message || t("server_error"));
         } else {
-          // This catches the "Server Error" HTML page
-          throw new Error(
-            "The server is currently sleepy. Please try again in a moment.",
-          );
+          throw new Error("The server is currently sleepy. Please try again.");
         }
       }
 
@@ -124,7 +126,7 @@ const Reservation = () => {
         <div className="md:w-5/12 relative min-h-100">
           <img
             src="/reserve.jpg"
-            alt="Restaurant Atmosphere"
+            alt="Atmosphere"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40"></div>
@@ -138,14 +140,6 @@ const Reservation = () => {
             <p className="text-[10px] uppercase tracking-widest leading-loose opacity-70">
               Komitas, Nikoghayos Tigranyan 10, Yerevan
             </p>
-            <a
-              href="https://maps.google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-[10px] uppercase border-b border-white/40 pb-1 mt-4 tracking-widest hover:text-[#C5A28E] transition-colors"
-            >
-              {t("show_maps")}
-            </a>
           </div>
         </div>
 
@@ -201,7 +195,6 @@ const Reservation = () => {
                   required
                   value={formData.date}
                   onChange={handleChange}
-                  // 🎯 CHANGED: Replaced font-sans text-sm with font-serif italic text-base
                   className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base cursor-pointer"
                 />
               </div>
@@ -213,7 +206,6 @@ const Reservation = () => {
                   name="time"
                   value={formData.time}
                   onChange={handleChange}
-                  // 🎯 CHANGED: Replaced font-sans text-sm with font-serif italic text-base
                   className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base cursor-pointer"
                 >
                   {times.map((t) => (
@@ -233,7 +225,6 @@ const Reservation = () => {
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
-                // 🎯 CHANGED: Replaced font-sans text-sm with font-serif italic text-base
                 className="w-full bg-transparent outline-none text-earth-dark font-serif italic text-base cursor-pointer"
               >
                 <option value="Main Dining Room">{t("Main Dining")}</option>
