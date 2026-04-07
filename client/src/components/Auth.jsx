@@ -113,15 +113,15 @@ const Auth = ({ setIsLoggedIn }) => {
       const data = await res.json();
       if (res.ok) {
         setMessage("🌿 Check your inbox for the recovery link!");
-        setError(""); // 🎯 Fix: Clear error if successful
+        setError("");
       } else {
         setError(data.msg || "Could not send recovery email.");
-        setMessage(""); // 🎯 Fix: Clear "Sending..." if failed
+        setMessage("");
       }
     } catch (err) {
       console.error("Forgot Password Error:", err);
       setError("Connection error.");
-      setMessage(""); // 🎯 Fix: Clear "Sending..." if failed
+      setMessage("");
     }
   };
 
@@ -175,7 +175,7 @@ const Auth = ({ setIsLoggedIn }) => {
       }
     } catch (err) {
       setError(err.message);
-      setMessage(""); // 🎯 Fix: Ensure message is empty on error
+      setMessage("");
     } finally {
       setIsLoading(false);
     }
@@ -311,29 +311,32 @@ const Auth = ({ setIsLoggedIn }) => {
                 />
               </div>
 
-              <div className="relative">
+              {/* 🎯 FIX: Wrapped the input and button in their own dedicated relative container! */}
+              <div>
                 <label className="block text-[10px] uppercase tracking-widest text-earth-medium font-sans font-bold mb-2">
                   {t("password")}
                 </label>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full bg-transparent border-b border-sand py-2 pr-10 outline-none focus:border-earth-dark transition-all text-earth-dark"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-0 bottom-2 text-earth-medium hover:text-earth-dark p-1 cursor-pointer bg-transparent border-none"
-                >
-                  <i
-                    className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} text-sm`}
-                  ></i>
-                </button>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full bg-transparent border-b border-sand py-2 pr-10 outline-none focus:border-earth-dark transition-all text-earth-dark"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-earth-medium hover:text-earth-dark p-1 cursor-pointer bg-transparent border-none flex items-center justify-center"
+                  >
+                    <i
+                      className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} text-sm`}
+                    ></i>
+                  </button>
+                </div>
                 {!isLogin && (
                   <p className="text-[9px] text-gray-400 mt-2 font-sans tracking-wide leading-relaxed">
                     8+ chars, upper, lower, number, & special.
@@ -353,7 +356,6 @@ const Auth = ({ setIsLoggedIn }) => {
                 </div>
               )}
 
-              {/* 🎯 Fix: Error and Message Logic Cleaned up */}
               {error && (
                 <div className="p-4 bg-red-50 border border-red-100 text-[10px] text-red-800 uppercase tracking-widest font-bold italic animate-in slide-in-from-top-2">
                   {error}
@@ -394,7 +396,6 @@ const Auth = ({ setIsLoggedIn }) => {
                 }}
                 className="text-earth-medium hover:text-earth-dark text-[10px] uppercase tracking-[0.2em] font-bold transition-all bg-transparent border-none cursor-pointer"
               >
-                {/* 🎯 Fix: This text was reversed, now fixed! */}
                 {isLogin ? t("new_to_circle") : t("already_member")}
               </button>
             </div>
